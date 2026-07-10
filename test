@@ -52,7 +52,7 @@
     .bar-container { height: 5px; background: #1e1c1e; border-radius: 3px; overflow: hidden; }
     .bar-fill { height: 100%; width: 0%; transition: width 0.1s linear; }
     
-    .scroller { flex: 1; overflow-y: scroll; display: flex; flex-direction: column; gap: 6px; pr: 2px; }
+    .scroller { flex: 1; overflow-y: scroll; display: flex; flex-direction: column; gap: 6px; }
     .scroller::-webkit-scrollbar { width: 4px; }
     .scroller::-webkit-scrollbar-track { background: transparent; }
     .scroller::-webkit-scrollbar-thumb { background: #3a363a; border-radius: 2px; }
@@ -136,17 +136,17 @@
         moodProgress: 0,
         lastTick: new Date().getTime(),
         gear: {
-            g1: { id: "g1", name: "🍼 營養補給物資", lvl: 0, baseCost: 10, costMult: 1.4, val: 2, desc: "+2 金幣/週期，補給 20% 飽食度", costType: "gold" },
-            g2: { id: "g2", name: "🐱 裝飾性特製貓耳", lvl: 0, baseCost: 50, costMult: 1.5, val: 120, desc: "縮短 120毫秒 產金時間間隔", costType: "gold" },
-            g3: { id: "g3", name: "🕊️ 輕質微型不對稱雙翼", lvl: 0, baseCost: 250, costMult: 1.6, val: 1, desc: "每週期有機率額外獲得 1 幻星", costType: "gold" },
-            g4: { id: "g4", name: "👑 小型精製金屬冕", lvl: 0, baseCost: 1000, costMult: 1.8, val: 0.4, desc: "全圖生產收益永久提升 40%", costType: "gold" },
-            g5: { id: "g5", name: "🔮 軌道控制干涉制導球", lvl: 0, baseCost: 5, costMult: 2.0, val: 3, desc: "手動點擊交互收益提升 300%", costType: "shards" }
+            g1: { id: "g1", name: "🍼 營養補給物資", lvl: 0, baseCost: 15, costMult: 1.25, val: 1, desc: "+1 金幣/週期，補給 20% 飽食度", costType: "gold" },
+            g2: { id: "g2", name: "🐱 裝飾性特製貓耳", lvl: 0, baseCost: 40, costMult: 1.25, val: 80, desc: "縮短 80毫秒 產金時間間隔（貓耳體積隨等級放大）", costType: "gold" },
+            g3: { id: "g3", name: "🕊️ 輕質微型雙翼", lvl: 0, baseCost: 120, costMult: 1.28, val: 1, desc: "每週期有機率獲得幻星（雙翼尺寸隨等級放大）", costType: "gold" },
+            g4: { id: "g4", name: "👑 小型精製金屬冕", lvl: 0, baseCost: 350, costMult: 1.30, val: 0.15, desc: "全圖生產收益永久提升 15%（王冠隨等級放大變寬）", costType: "gold" },
+            g5: { id: "g5", name: "🔮 軌道控制干涉制導球", lvl: 0, baseCost: 3, costMult: 1.30, val: 0.5, desc: "手動點擊收益提升 50%（魔法球環繞數量隨等級增加）", costType: "shards" }
         }
     };
 
     var cfg = {
-        baseAutoInt: 2500,
-        baseMoodInt: 5000,
+        baseAutoInt: 3000,
+        baseMoodInt: 6000,
         canvasW: 374,
         canvasH: 180
     };
@@ -214,9 +214,9 @@
         }
 
         var stageStr = "原型體";
-        if (db.totalGears >= 4) stageStr = "變異株";
-        if (db.totalGears >= 10) stageStr = "進化型";
-        if (db.totalGears >= 18) stageStr = "完全體";
+        if (db.totalGears >= 5) stageStr = "變異株";
+        if (db.totalGears >= 12) stageStr = "進化型";
+        if (db.totalGears >= 22) stageStr = "完全體";
         document.getElementById("stage-board").innerText = "型態: " + stageStr;
 
         document.getElementById("lbl-satiety").innerText = db.satiety + "%";
@@ -224,7 +224,7 @@
     }
 
     function getAutoInterval() {
-        return Math.max(600, cfg.baseAutoInt - (db.gear.g2.lvl * db.gear.g2.val));
+        return Math.max(800, cfg.baseAutoInt - (db.gear.g2.lvl * db.gear.g2.val));
     }
 
     function getMoodInterval() {
@@ -238,25 +238,28 @@
             db.gold -= cost;
             item.lvl++;
             petAction = "happy"; actionTimer = 20;
-            pushLog("已加載補強單元: " + item.name);
+            pushLog("已加載補強單元: " + item.name + " 升至 Lv." + item.lvl);
             if(id == "g1") db.satiety = Math.min(100, db.satiety + 20);
             syncData();
         } else if (item.costType == "shards" && db.shards >= cost) {
             db.shards -= cost;
             item.lvl++;
             petAction = "happy"; actionTimer = 20;
-            pushLog("已部署模組組件: " + item.name);
+            pushLog("已部署模組組件: " + item.name + " 升至 Lv." + item.lvl);
             syncData();
         }
     }
 
     function getOutputValues() {
         var gAdd = 1 + (db.gear.g1.lvl * db.gear.g1.val);
-        var sAdd = 0 + (db.gear.g3.lvl * db.gear.g3.val);
+        var sAdd = 0;
+        if(db.gear.g3.lvl > 0 && Math.random() < 0.15) {
+            sAdd = db.gear.g3.lvl;
+        }
         var mult = 1 + (db.gear.g4.lvl * db.gear.g4.val);
         return {
             gold: Math.floor(gAdd * mult),
-            shards: Math.floor(sAdd * mult)
+            shards: sAdd
         };
     }
 
@@ -274,14 +277,16 @@
         var autoInt = getAutoInterval();
         if (db.satiety > 0) {
             var out = getOutputValues();
-            db.gold += out.gold;
-            db.shards += out.shards;
-            if (out.gold > 0 && animFrame % Math.floor(autoInt/40) === 0) {
+            if (animFrame % Math.floor(autoInt/40) === 0) {
+                db.gold += out.gold;
                 popText(cfg.canvasW / 2, 50, "+" + out.gold, "#ffd866");
-                if (Math.random() < 0.08) db.satiety = Math.max(0, db.satiety - 1);
-            }
-            if (out.shards > 0 && animFrame % Math.floor(autoInt/40) === 0) {
-                popText(cfg.canvasW / 2 + 25, 65, "+" + out.shards + "⭐", "#78dce8");
+                
+                if (out.shards > 0) {
+                    db.shards += out.shards;
+                    popText(cfg.canvasW / 2 + 25, 65, "+" + out.shards + "⭐", "#78dce8");
+                }
+                
+                if (Math.random() < 0.05) db.satiety = Math.max(0, db.satiety - 1);
             }
         }
 
@@ -315,9 +320,9 @@
         var x = e.clientX - rect.left;
         var y = e.clientY - rect.top;
 
-        var out = getOutputValues();
+        var gAdd = 1 + (db.gear.g1.lvl * 0.5);
         var clickAmp = 1 + (db.gear.g5.lvl * db.gear.g5.val);
-        var clickGold = Math.floor(out.gold * clickAmp);
+        var clickGold = Math.floor(gAdd * clickAmp);
         
         db.gold += clickGold;
         popText(x, y, "撫摸 +" + clickGold, "#ff6188");
@@ -325,7 +330,7 @@
         petAction = "happy";
         actionTimer = 25;
 
-        db.moodProgress += Math.floor(getMoodInterval() * 0.08);
+        db.moodProgress += Math.floor(getMoodInterval() * 0.04);
         syncData();
     }
 
@@ -385,29 +390,35 @@
             ctx.strokeStyle = "#5b5459";
             ctx.lineWidth = 1.5;
             
+            var wingSize = 24 + Math.min(25, g3Lvl * 3);
+            
             ctx.beginPath();
             ctx.moveTo(cx - 24, py);
-            ctx.bezierCurveTo(cx - 55, py - 22 + wingFlap, cx - 45, py + 8 + wingFlap, cx - 24, py + 12);
+            ctx.bezierCurveTo(cx - 24 - wingSize, py - 22 + wingFlap, cx - 21 - wingSize, py + 8 + wingFlap, cx - 24, py + 12);
             ctx.fill(); ctx.stroke();
             
             ctx.beginPath();
             ctx.moveTo(cx + 24, py);
-            ctx.bezierCurveTo(cx + 55, py - 22 + wingFlap, cx + 45, py + 8 + wingFlap, cx + 24, py + 12);
+            ctx.bezierCurveTo(cx + 24 + wingSize, py - 22 + wingFlap, cx + 21 + wingSize, py + 8 + wingFlap, cx + 24, py + 12);
             ctx.fill(); ctx.stroke();
             ctx.restore();
         }
 
         if (g2Lvl > 0) {
             ctx.fillStyle = "#ff6188";
+            var earW = Math.min(18, 10 + g2Lvl * 1);
+            var earH = Math.min(20, 10 + g2Lvl * 1.5);
+            
             ctx.beginPath();
             ctx.moveTo(cx - 26, py - 12);
-            ctx.lineTo(cx - 36, py - 32);
-            ctx.lineTo(cx - 15, py - 22);
+            ctx.lineTo(cx - 26 - earW, py - 12 - earH);
+            ctx.lineTo(cx - 26 + earW, py - 12);
             ctx.closePath(); ctx.fill();
+            
             ctx.beginPath();
             ctx.moveTo(cx + 26, py - 12);
-            ctx.lineTo(cx + 36, py - 32);
-            ctx.lineTo(cx + 15, py - 22);
+            ctx.lineTo(cx + 26 + earW, py - 12 - earH);
+            ctx.lineTo(cx + 26 - earW, py - 12);
             ctx.closePath(); ctx.fill();
         }
 
@@ -433,7 +444,7 @@
         } else if (petAction == "happy") {
             ctx.lineWidth = 2;
             ctx.strokeStyle = "#2d2a2e";
-            ctx.beginPath(); ctx.arc(cx - 10, py, 3, Math.PI, 0); ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx - 10, py, 3, Math.PI, 0); stroke();
             ctx.beginPath(); ctx.arc(cx + 10, py, 3, Math.PI, 0); ctx.stroke();
             ctx.fillStyle = "#ff6188";
             ctx.beginPath();
@@ -464,24 +475,29 @@
             ctx.save();
             ctx.translate(cx, py - 22);
             ctx.fillStyle = "#ffd866";
+            
+            var crownW = Math.min(22, 9 + g4Lvl * 1.5);
+            var crownH = Math.min(18, 7 + g4Lvl * 1);
+            
             ctx.beginPath();
-            ctx.moveTo(-9, 0);
-            ctx.lineTo(-11, -7);
-            ctx.lineTo(-5, -3);
-            ctx.lineTo(0, -12);
-            ctx.lineTo(5, -3);
-            ctx.lineTo(11, -7);
-            ctx.lineTo(9, 0);
+            ctx.moveTo(-crownW, 0);
+            ctx.lineTo(-crownW - 2, -crownH + 5);
+            ctx.lineTo(-crownW/2, -crownH/2);
+            ctx.lineTo(0, -crownH - 4);
+            ctx.lineTo(crownW/2, -crownH/2);
+            ctx.lineTo(crownW + 2, -crownH + 5);
+            ctx.lineTo(crownW, 0);
             ctx.closePath();
             ctx.fill();
             ctx.restore();
         }
 
         if (g5Lvl > 0) {
-            var orbCount = Math.min(4, g5Lvl);
+            var orbCount = Math.min(8, g5Lvl);
+            var orbitR = 40 + Math.min(25, g5Lvl * 3);
             for (var i = 0; i < orbCount; i++) {
                 var angle = (animFrame * 0.05) + (i * (Math.PI * 2) / orbCount);
-                var orbX = cx + Math.cos(angle) * 50;
+                var orbX = cx + Math.cos(angle) * orbitR;
                 var orbY = py + Math.sin(angle) * 15;
                 
                 ctx.save();
