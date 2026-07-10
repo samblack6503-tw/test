@@ -1,6 +1,6 @@
 <HTML>
 <HEAD>
-<TITLE>夢幻萌寵：桌面電子雞養成系統</TITLE>
+<TITLE>我的夢幻萌寵</TITLE>
 <META HTTP-EQUIV="X-UA-Compatible" CONTENT="IE=edge">
 <META CHARSET="utf-8">
 <HTA:APPLICATION 
@@ -19,114 +19,114 @@
 />
 <STYLE>
     * { box-sizing: border-box; user-select: none; -webkit-user-select: none; font-family: "Microsoft JhengHei", sans-serif; }
-    body { margin: 0; padding: 0; background: #fff5f7; color: #5a4b51; overflow: hidden; font-size: 12px; }
-    #win-chrome { width: 780px; height: 500px; background: linear-gradient(135deg, #ffeef2 0%, #fff5f7 100%); border: 3px solid #ffb7c5; display: flex; flex-direction: column; position: relative; box-shadow: 0 10px 30px rgba(255,183,197,0.4); border-radius: 12px; }
-    #title-bar { height: 36px; background: #ffb7c5; display: flex; justify-content: space-between; align-items: center; padding: 0 14px; }
-    .title-text { font-size: 13px; font-weight: bold; color: #fff; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
-    .win-btn { width: 24px; height: 24px; background: #fff; border: none; color: #ff8b9f; cursor: pointer; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; border-radius: 50%; }
-    .win-btn:hover { background: #ff5e7e; color: white; }
-    #main-layout { display: flex; flex: 1; height: 464px; padding: 12px; gap: 12px; }
-    .panel { background: rgba(255, 255, 255, 0.9); border: 2px solid #ffe3e8; border-radius: 8px; display: flex; flex-direction: column; position: relative; box-shadow: 0 4px 10px rgba(255,183,197,0.1); }
-    #left-zone { width: 300px; display: flex; flex-direction: column; gap: 12px; }
-    #right-zone { flex: 1; display: flex; flex-direction: column; gap: 12px; }
-    .panel-header { background: #ffe3e8; padding: 6px 12px; border-bottom: 2px solid #ffd0d8; font-size: 12px; font-weight: bold; color: #ff5e7e; display: flex; justify-content: space-between; border-radius: 6px 6px 0 0; }
-    #currency-board { padding: 10px; display: flex; flex-direction: column; gap: 6px; background: #fff; border-bottom: 1px solid #ffe3e8; }
-    .curr-row { display: flex; justify-content: space-between; align-items: center; background: #fff9fa; padding: 6px 10px; border-radius: 6px; border: 1px solid #ffe3e8; }
-    .curr-lbl { font-size: 12px; font-weight: bold; color: #8a6d75; }
-    .curr-val { font-size: 16px; font-weight: bold; font-family: Arial; color: #ff5e7e; }
-    #canvas-container { flex: 1; position: relative; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle at 50% 50%, #fff0f3 0%, #ffe3e8 100%); cursor: pointer; border-radius: 0 0 6px 6px; overflow: hidden; }
-    #viewCanvas { transition: transform 0.05s; }
+    body { margin: 0; padding: 0; background: #232125; color: #e3dec3; overflow: hidden; font-size: 12px; }
+    #win-chrome { width: 400px; height: 520px; background: #2d2a2e; border: 2px solid #443f43; display: flex; flex-direction: column; position: relative; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border-radius: 8px; }
+    #title-bar { height: 32px; background: #222022; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; border-bottom: 1px solid #3a363a; }
+    .title-text { font-size: 11px; font-weight: bold; color: #ab9df2; letter-spacing: 1px; }
+    .win-btn { width: 20px; height: 20px; background: #3a363a; border: none; color: #ff6188; cursor: pointer; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; border-radius: 4px; }
+    .win-btn:hover { background: #ff6188; color: #2d2a2e; }
+    
+    #tabs-header { display: flex; background: #222022; border-bottom: 1px solid #3a363a; padding: 0 4px; }
+    .tab-link { padding: 8px 16px; background: transparent; border: none; color: #787176; cursor: pointer; font-size: 12px; font-weight: bold; border-bottom: 2px solid transparent; transition: all 0.2s; }
+    .tab-link:hover { color: #e3dec3; }
+    .tab-link.active { color: #a9dc76; border-bottom-color: #a9dc76; background: rgba(169,220,118,0.05); }
+    
+    .tab-content { display: none; flex: 1; flex-direction: column; padding: 12px; height: 418px; overflow: hidden; }
+    .tab-content.active { display: flex; }
+    
+    .panel { background: #222022; border: 1px solid #3a363a; border-radius: 6px; display: flex; flex-direction: column; margin-bottom: 10px; }
+    .panel-header { background: #2d2a2e; padding: 6px 10px; border-bottom: 1px solid #3a363a; font-size: 11px; font-weight: bold; color: #787176; display: flex; justify-content: space-between; border-radius: 5px 5px 0 0; }
+    
+    #canvas-container { height: 180px; position: relative; display: flex; justify-content: center; align-items: center; background: #1e1c1e; cursor: pointer; border-radius: 6px; overflow: hidden; border: 1px solid #3a363a; margin-bottom: 10px; }
     #dmg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-    .pop-text { position: absolute; font-weight: bold; pointer-events: none; font-size: 15px; animation: pMove 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-    @keyframes pMove { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 20% { opacity: 1; transform: translateY(-10px) scale(1.2); } 100% { transform: translateY(-60px) scale(1); opacity: 0; } }
-    .scroller { flex: 1; overflow-y: scroll; padding: 8px; display: flex; flex-direction: column; gap: 8px; background: #fffcfd; }
-    .scroller::-webkit-scrollbar { width: 6px; }
+    .pop-text { position: absolute; font-weight: bold; pointer-events: none; font-size: 13px; animation: pMove 0.6s ease-out forwards; }
+    @keyframes pMove { 0% { transform: translateY(0); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(-40px); opacity: 0; } }
+    
+    .curr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
+    .curr-box { background: #222022; border: 1px solid #3a363a; padding: 8px; border-radius: 6px; text-align: center; }
+    .curr-lbl { font-size: 11px; color: #787176; margin-bottom: 2px; }
+    .curr-val { font-size: 14px; font-weight: bold; color: #ffd866; font-family: Arial; }
+    
+    .hud-box { padding: 8px; border-top: 1px solid #3a363a; background: #222022; border-radius: 0 0 5px 5px; }
+    .hud-row { display: flex; justify-content: space-between; font-size: 11px; color: #787176; margin-bottom: 4px; }
+    .bar-container { height: 5px; background: #1e1c1e; border-radius: 3px; overflow: hidden; }
+    .bar-fill { height: 100%; width: 0%; transition: width 0.1s linear; }
+    
+    .scroller { flex: 1; overflow-y: scroll; display: flex; flex-direction: column; gap: 6px; pr: 2px; }
+    .scroller::-webkit-scrollbar { width: 4px; }
     .scroller::-webkit-scrollbar-track { background: transparent; }
-    .scroller::-webkit-scrollbar-thumb { background: #ffd0d8; border-radius: 3px; }
-    .card { background: #ffffff; border: 2px solid #ffe3e8; border-radius: 8px; padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
-    .card:hover { border-color: #ffb7c5; background: #fff9fa; }
-    .card-meta { display: flex; flex-direction: column; gap: 2px; width: 260px; }
-    .card-title { font-size: 12px; font-weight: bold; color: #735961; }
-    .card-desc { font-size: 11px; color: #a68a93; }
-    .card-cost { font-size: 11px; font-weight: bold; color: #ff758f; margin-top: 2px; }
-    .btn-action { background: linear-gradient(to bottom, #ff9ebb 0%, #ff758f 100%); border: none; border-radius: 20px; color: white; padding: 6px 14px; min-width: 80px; text-align: center; cursor: pointer; font-size: 11px; font-weight: bold; box-shadow: 0 2px 5px rgba(255,117,143,0.3); transition: all 0.1s; }
-    .btn-action:hover:not(:disabled) { background: linear-gradient(to bottom, #ffb3c6 0%, #ff5e7e 100%); box-shadow: 0 4px 8px rgba(255,94,126,0.4); }
-    .btn-action:active:not(:disabled) { transform: scale(0.95); }
-    .btn-action:disabled { background: #e2d9db; color: #a69fa1; box-shadow: none; cursor: not-allowed; }
-    .hud-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; padding: 8px; background: #fff; border-top: 2px solid #ffe3e8; }
-    .hud-box { background: #fff9fa; border: 1px solid #ffe3e8; padding: 6px; border-radius: 6px; display: flex; flex-direction: column; }
-    .hud-box-lbl { font-size: 10px; color: #a68a93; font-weight: bold; }
-    .hud-box-val { font-size: 11px; color: #ff5e7e; font-weight: bold; margin-top: 2px; }
-    .bar-container { height: 6px; background: #eee0e2; border-radius: 3px; margin-top: 4px; overflow: hidden; position: relative; }
-    .bar-fill { height: 100%; width: 0%; background: #ff758f; box-shadow: 0 0 4px #ff758f; }
-    #log-panel { height: 75px; background: #fff; border: 2px solid #ffe3e8; margin: 0 12px 12px 12px; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
-    #log-stream { flex: 1; padding: 6px 12px; font-size: 11px; color: #8a7379; display: flex; flex-direction: column; justify-content: flex-end; }
-    .log-line { margin-top: 2px; }
-    .log-system { color: #b58da3; }
-    .log-loot { color: #ff8b3d; font-weight: bold; }
-    .log-craft { color: #d65672; font-weight: bold; }
+    .scroller::-webkit-scrollbar-thumb { background: #3a363a; border-radius: 2px; }
+    
+    .card { background: #222022; border: 1px solid #3a363a; border-radius: 6px; padding: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .card-meta { display: flex; flex-direction: column; gap: 2px; width: 240px; }
+    .card-title { font-size: 12px; font-weight: bold; color: #e3dec3; }
+    .card-desc { font-size: 11px; color: #787176; }
+    .card-cost { font-size: 11px; font-weight: bold; color: #ff6188; margin-top: 1px; }
+    
+    .btn-action { background: #3a363a; border: 1px solid #4d464b; border-radius: 4px; color: #e3dec3; padding: 5px 10px; min-width: 65px; text-align: center; cursor: pointer; font-size: 11px; font-weight: bold; }
+    .btn-action:hover:not(:disabled) { background: #4d464b; border-color: #787176; color: #fff; }
+    .btn-action:active:not(:disabled) { transform: scale(0.96); }
+    .btn-action:disabled { background: #1e1c1e; border-color: #222022; color: #443f43; cursor: not-allowed; }
+    
+    #log-stream { flex: 1; padding: 6px; font-size: 11px; color: #787176; display: flex; flex-direction: column; justify-content: flex-end; line-height: 1.5; }
 </STYLE>
 </HEAD>
 <BODY>
 
 <DIV ID="win-chrome">
     <DIV ID="title-bar">
-        <DIV CLASS="title-text">✨ 我的夢幻萌寵桌寵系統 ✨</DIV>
+        <DIV CLASS="title-text">🪐 萌寵觀測箱</DIV>
         <BUTTON CLASS="win-btn" ONCLICK="window.close()">✕</BUTTON>
     </DIV>
 
-    <DIV ID="main-layout">
-        <DIV ID="left-zone">
-            <DIV CLASS="panel" STYLE="flex: 1;">
-                <DIV CLASS="panel-header"><SPAN ID="pet-state-lbl">飽食萌寵</SPAN><SPAN ID="stage-board">生長期: 幼體</SPAN></DIV>
-                <DIV ID="canvas-container" ONCLICK="execManualClick(event)">
-                    <CANVAS ID="viewCanvas" WIDTH="296" HEIGHT="250"></CANVAS>
-                    <DIV ID="dmg-layer"></DIV>
-                </DIV>
-                <DIV CLASS="hud-grid">
-                    <DIV CLASS="hud-box">
-                        <DIV CLASS="hud-box-lbl">寵物飽食度 (自動產金)</DIV>
-                        <DIV CLASS="hud-box-val" ID="hud-aps">100%</DIV>
-                        <DIV CLASS="bar-container"><DIV ID="bar-satiety" CLASS="bar-fill" STYLE="background:#ff9ebb;"></DIV></DIV>
-                    </DIV>
-                    <DIV CLASS="hud-box">
-                        <DIV CLASS="hud-box-lbl">心情凝聚度 (產星週期)</DIV>
-                        <DIV CLASS="hud-box-val" ID="hud-tps">0.0s</DIV>
-                        <DIV CLASS="bar-container"><DIV ID="bar-mood" CLASS="bar-fill" STYLE="background:#70e1ff;"></DIV></DIV>
-                    </DIV>
-                </DIV>
+    <DIV ID="tabs-header">
+        <BUTTON CLASS="tab-link active" ONCLICK="switchTab('tab-main', this)">狀態</BUTTON>
+        <BUTTON CLASS="tab-link" ONCLICK="switchTab('tab-shop', this)">商店</BUTTON>
+        <BUTTON CLASS="tab-link" ONCLICK="switchTab('tab-log', this)">日誌</BUTTON>
+    </DIV>
+
+    <DIV ID="tab-main" CLASS="tab-content active">
+        <DIV ID="canvas-container" ONCLICK="execManualClick(event)">
+            <CANVAS ID="viewCanvas" WIDTH="374" HEIGHT="180"></CANVAS>
+            <DIV ID="dmg-layer"></DIV>
+        </DIV>
+        
+        <DIV CLASS="curr-grid">
+            <DIV CLASS="curr-box">
+                <DIV CLASS="curr-lbl">金幣</DIV>
+                <DIV CLASS="curr-val" ID="v-gold">0</DIV>
             </DIV>
-            <DIV CLASS="panel" STYLE="height: 110px;">
-                <DIV CLASS="panel-header">小錢包與收藏庫</DIV>
-                <DIV ID="currency-board">
-                    <DIV CLASS="curr-row">
-                        <SPAN CLASS="curr-lbl">💰 萌寵金幣</SPAN>
-                        <SPAN CLASS="curr-val" ID="v-gold" STYLE="color:#e5a93b;">0</SPAN>
-                    </DIV>
-                    <DIV CLASS="curr-row" STYLE="margin-top: 2px;">
-                        <SPAN CLASS="curr-lbl">⭐ 幸運幻星</SPAN>
-                        <SPAN CLASS="curr-val" ID="v-shards" STYLE="color:#5cbce6;">0</SPAN>
-                    </DIV>
-                </DIV>
+            <DIV CLASS="curr-box">
+                <DIV CLASS="curr-lbl">幻星</DIV>
+                <DIV CLASS="curr-val" ID="v-shards" STYLE="color:#78dce8;">0</DIV>
             </DIV>
         </DIV>
 
-        <DIV ID="right-zone">
-            <DIV CLASS="panel" STYLE="flex: 1;">
-                <DIV CLASS="panel-header">育兒商城：購買與升級萌寵裝備</DIV>
-                <DIV CLASS="scroller" ID="scroller-gear"></DIV>
+        <DIV CLASS="panel" STYLE="margin-top:2px;">
+            <DIV CLASS="panel-header"><SPAN ID="pet-state-lbl">運作中</SPAN><SPAN ID="stage-board">--</SPAN></DIV>
+            <DIV CLASS="hud-box">
+                <DIV CLASS="hud-row"><SPAN>飽食度</SPAN><SPAN ID="lbl-satiety">100%</SPAN></DIV>
+                <DIV CLASS="bar-container"><DIV ID="bar-satiety" CLASS="bar-fill" STYLE="background:#ff6188;"></DIV></DIV>
+                <DIV CLASS="hud-row" STYLE="margin-top:8px;"><SPAN>心情凝聚度</SPAN><SPAN ID="lbl-mood">0.0s</SPAN></DIV>
+                <DIV CLASS="bar-container"><DIV ID="bar-mood" CLASS="bar-fill" STYLE="background:#78dce8;"></DIV></DIV>
             </DIV>
         </DIV>
     </DIV>
 
-    <DIV ID="log-panel">
-        <DIV ID="log-stream"></DIV>
+    <DIV ID="tab-shop" CLASS="tab-content">
+        <DIV CLASS="scroller" ID="scroller-gear"></DIV>
+    </DIV>
+
+    <DIV ID="tab-log" CLASS="tab-content">
+        <DIV CLASS="panel" STYLE="flex:1; margin:0;">
+            <DIV ID="log-stream"></DIV>
+        </DIV>
     </DIV>
 </DIV>
 
 <SCRIPT>
-    window.resizeTo(780, 500);
-    window.moveTo((window.screen.availWidth - 780) / 2, (window.screen.availHeight - 500) / 2);
+    window.resizeTo(400, 520);
+    window.moveTo((window.screen.availWidth - 400) / 2, (window.screen.availHeight - 520) / 2);
 
     var db = {
         gold: 0,
@@ -136,19 +136,19 @@
         moodProgress: 0,
         lastTick: new Date().getTime(),
         gear: {
-            g1: { id: "g1", name: "🍼 高級美味牛奶", lvl: 0, baseCost: 10, costMult: 1.4, val: 2, desc: "餵食讓萌寵更有活力！+2 金幣/每次結算", costType: "gold" },
-            g2: { id: "g2", name: "🐱 軟綿綿貓耳髮箍", lvl: 0, baseCost: 50, costMult: 1.5, val: 120, desc: "變得更可愛！縮短 120毫秒 產金時間間隔", costType: "gold" },
-            g3: { id: "g3", name: "🕊️ 守護天使小翅膀", lvl: 0, baseCost: 250, costMult: 1.6, val: 1, desc: "萌寵學會飛翔！每次結算有機會獲得 1 顆幻星", costType: "gold" },
-            g4: { id: "g4", name: "👑 璀璨黃金小王冠", lvl: 0, baseCost: 1000, costMult: 1.8, val: 0.4, desc: "領主氣質！全圖收益永久提升 40%", costType: "gold" },
-            g5: { id: "g5", name: "🔮 奇幻環繞魔法球", lvl: 0, baseCost: 5, costMult: 2.0, val: 3, desc: "魔法環繞！點擊撫摸萌寵的收益暴增 300%", costType: "shards" }
+            g1: { id: "g1", name: "🍼 營養補給物資", lvl: 0, baseCost: 10, costMult: 1.4, val: 2, desc: "+2 金幣/週期，補給 20% 飽食度", costType: "gold" },
+            g2: { id: "g2", name: "🐱 裝飾性特製貓耳", lvl: 0, baseCost: 50, costMult: 1.5, val: 120, desc: "縮短 120毫秒 產金時間間隔", costType: "gold" },
+            g3: { id: "g3", name: "🕊️ 輕質微型不對稱雙翼", lvl: 0, baseCost: 250, costMult: 1.6, val: 1, desc: "每週期有機率額外獲得 1 幻星", costType: "gold" },
+            g4: { id: "g4", name: "👑 小型精製金屬冕", lvl: 0, baseCost: 1000, costMult: 1.8, val: 0.4, desc: "全圖生產收益永久提升 40%", costType: "gold" },
+            g5: { id: "g5", name: "🔮 軌道控制干涉制導球", lvl: 0, baseCost: 5, costMult: 2.0, val: 3, desc: "手動點擊交互收益提升 300%", costType: "shards" }
         }
     };
 
     var cfg = {
         baseAutoInt: 2500,
         baseMoodInt: 5000,
-        canvasW: 296,
-        canvasH: 250
+        canvasW: 374,
+        canvasH: 180
     };
 
     var cvs, ctx, animFrame = 0, petAction = "idle", actionTimer = 0;
@@ -159,20 +159,27 @@
         buildUI();
         tick();
         setInterval(tick, 40);
-        pushLog("歡迎來到萌寵世界！快點擊萌寵撫摸牠吧！", "system");
+        pushLog("環境觀測連線成功。");
+    }
+
+    function switchTab(tabId, btn) {
+        var contents = document.getElementsByClassName("tab-content");
+        for (var i = 0; i < contents.length; i++) contents[i].className = "tab-content";
+        var links = document.getElementsByClassName("tab-link");
+        for (var i = 0; i < links.length; i++) links[i].className = "tab-link";
+        document.getElementById(tabId).className = "tab-content active";
+        btn.className = "tab-link active";
     }
 
     function buildUI() {
         var html = "";
         for (var k in db.gear) {
             var item = db.gear[k];
-            var cClass = item.costType == "gold" ? "c-gold" : "c-shard";
-            var cSign = item.costType == "gold" ? " 金幣" : " 幻星";
             html += '<DIV CLASS="card" ID="c-gear-' + item.id + '">' +
                     '<DIV CLASS="card-meta">' +
                     '<SPAN CLASS="card-title" ID="lbl-name-' + item.id + '">' + item.name + '</SPAN>' +
                     '<SPAN CLASS="card-desc">' + item.desc + '</SPAN>' +
-                    '<SPAN CLASS="card-cost" ID="lbl-cost-' + item.id + '">花費: --</SPAN>' +
+                    '<SPAN CLASS="card-cost" ID="lbl-cost-' + item.id + '">--</SPAN>' +
                     '</DIV>' +
                     '<BUTTON CLASS="btn-action" ID="btn-gear-' + item.id + '" ONCLICK="buyGear(\'' + item.id + '\')">升級</BUTTON>' +
                     '</DIV>';
@@ -197,7 +204,7 @@
             document.getElementById("lbl-name-" + item.id).innerText = item.name + " [Lv." + item.lvl + "]";
             
             var cSign = item.costType == "gold" ? " 金幣" : " 幻星";
-            document.getElementById("lbl-cost-" + item.id).innerText = "需要: " + cost + cSign;
+            document.getElementById("lbl-cost-" + item.id).innerText = "需求: " + cost + cSign;
             
             if (item.costType == "gold") {
                 document.getElementById("btn-gear-" + item.id).disabled = (db.gold < cost);
@@ -206,14 +213,14 @@
             }
         }
 
-        var stageStr = "幼體史萊姆";
-        if (db.totalGears >= 4) stageStr = "成長期：貓耳小怪獸";
-        if (db.totalGears >= 10) stageStr = "成熟期：天界大精靈";
-        if (db.totalGears >= 18) stageStr = "究極體：神聖幻獸皇";
+        var stageStr = "原型體";
+        if (db.totalGears >= 4) stageStr = "變異株";
+        if (db.totalGears >= 10) stageStr = "進化型";
+        if (db.totalGears >= 18) stageStr = "完全體";
         document.getElementById("stage-board").innerText = "型態: " + stageStr;
 
-        document.getElementById("hud-aps").innerText = db.satiety + "%";
-        document.getElementById("hud-tps").innerText = (getMoodInterval() / 1000).toFixed(1) + "秒";
+        document.getElementById("lbl-satiety").innerText = db.satiety + "%";
+        document.getElementById("lbl-mood").innerText = (getMoodInterval() / 1000).toFixed(1) + "s";
     }
 
     function getAutoInterval() {
@@ -231,14 +238,14 @@
             db.gold -= cost;
             item.lvl++;
             petAction = "happy"; actionTimer = 20;
-            pushLog("成功購買/升級了裝備！萌寵變得更漂亮了！", "craft");
+            pushLog("已加載補強單元: " + item.name);
             if(id == "g1") db.satiety = Math.min(100, db.satiety + 20);
             syncData();
         } else if (item.costType == "shards" && db.shards >= cost) {
             db.shards -= cost;
             item.lvl++;
             petAction = "happy"; actionTimer = 20;
-            pushLog("啟動了核心魔法！萌寵散發出光芒！", "craft");
+            pushLog("已部署模組組件: " + item.name);
             syncData();
         }
     }
@@ -270,11 +277,11 @@
             db.gold += out.gold;
             db.shards += out.shards;
             if (out.gold > 0 && animFrame % Math.floor(autoInt/40) === 0) {
-                popText(cfg.canvasW / 2, 70, "+" + out.gold + "💰", "#e5a93b");
-                if (Math.random() < 0.1) db.satiety = Math.max(0, db.satiety - 1);
+                popText(cfg.canvasW / 2, 50, "+" + out.gold, "#ffd866");
+                if (Math.random() < 0.08) db.satiety = Math.max(0, db.satiety - 1);
             }
             if (out.shards > 0 && animFrame % Math.floor(autoInt/40) === 0) {
-                popText(cfg.canvasW / 2 + 30, 90, "+" + out.shards + "⭐", "#5cbce6");
+                popText(cfg.canvasW / 2 + 25, 65, "+" + out.shards + "⭐", "#78dce8");
             }
         }
 
@@ -284,17 +291,19 @@
             db.moodProgress = 0;
             if(db.satiety > 20) {
                 db.shards += 1;
-                popText(cfg.canvasW / 2 - 40, 100, "凝聚 +1⭐", "#5cbce6");
-                pushLog("萌寵心情很好，自動凝聚出了一顆幸運幻星！", "loot");
+                popText(cfg.canvasW / 2 - 30, 75, "+1⭐", "#78dce8");
+                pushLog("生物特徵穩定，聚合產出微量幻星");
             }
         }
         document.getElementById("bar-mood").style.width = Math.min(100, (db.moodProgress / moodInt) * 100) + "%";
         document.getElementById("bar-satiety").style.width = db.satiety + "%";
 
         if (db.satiety <= 0) {
-            document.getElementById("pet-state-lbl").innerText = "飢餓中 (停止生產)";
+            document.getElementById("pet-state-lbl").innerText = "極度飢餓";
+            document.getElementById("pet-state-lbl").style.color = "#ff6188";
         } else {
-            document.getElementById("pet-state-lbl").innerText = "萌寵正在努力幫你賺錢";
+            document.getElementById("pet-state-lbl").innerText = "生命特徵運作中";
+            document.getElementById("pet-state-lbl").style.color = "#a9dc76";
         }
 
         syncData();
@@ -311,12 +320,12 @@
         var clickGold = Math.floor(out.gold * clickAmp);
         
         db.gold += clickGold;
-        popText(x, y, "撫摸 +" + clickGold + "💰", "#ff5e7e");
+        popText(x, y, "撫摸 +" + clickGold, "#ff6188");
         
         petAction = "happy";
         actionTimer = 25;
 
-        db.moodProgress += Math.floor(getMoodInterval() * 0.1);
+        db.moodProgress += Math.floor(getMoodInterval() * 0.08);
         syncData();
     }
 
@@ -327,19 +336,17 @@
         el.style.left = (x - 40) + "px";
         el.style.top = (y - 15) + "px";
         el.style.color = color;
-        el.style.textShadow = "1px 1px 0px #fff, -1px -1px 0px #fff, 1px -1px 0px #fff, -1px 1px 0px #fff";
         el.innerText = txt;
         container.appendChild(el);
-        setTimeout(function() { if(el && el.parentNode) container.removeChild(el); }, 800);
+        setTimeout(function() { if(el && el.parentNode) container.removeChild(el); }, 600);
     }
 
-    function pushLog(txt, type) {
+    function pushLog(txt) {
         var s = document.getElementById("log-stream");
         var line = document.createElement("div");
-        line.className = "log-line log-" + type;
-        line.innerHTML = "• " + txt;
+        line.innerText = "> " + txt;
         s.appendChild(line);
-        if (s.childNodes.length > 3) s.removeChild(s.firstChild);
+        if (s.childNodes.length > 15) s.removeChild(s.firstChild);
     }
 
     function drawEllipse(ctx, cx, cy, rx, ry, color) {
@@ -357,143 +364,133 @@
         ctx.clearRect(0, 0, cfg.canvasW, cfg.canvasH);
 
         var cx = cfg.canvasW / 2;
-        var cy = cfg.canvasH / 2 + 20;
+        var cy = cfg.canvasH / 2 + 10;
         
-        var breathe = Math.sin(animFrame * 0.08) * 2;
-        var floatY = Math.sin(animFrame * 0.04) * 4;
+        var breathe = Math.sin(animFrame * 0.08) * 1.5;
+        var floatY = Math.sin(animFrame * 0.04) * 3;
         
         var py = cy + floatY;
 
-        var g1Lvl = db.gear.g1.lvl;
         var g2Lvl = db.gear.g2.lvl;
         var g3Lvl = db.gear.g3.lvl;
         var g4Lvl = db.gear.g4.lvl;
         var g5Lvl = db.gear.g5.lvl;
 
-        drawEllipse(ctx, cx, cy + 35, 45 + breathe, 10, "rgba(255, 183, 197, 0.4)");
+        drawEllipse(ctx, cx, cy + 28, 35 + breathe, 7, "rgba(0, 0, 0, 0.3)");
 
         if (g3Lvl > 0) {
             ctx.save();
-            var wingFlap = Math.sin(animFrame * 0.15) * 5;
-            ctx.fillStyle = "#ffffff";
-            ctx.strokeStyle = "#ffb7c5";
-            ctx.lineWidth = 2;
+            var wingFlap = Math.sin(animFrame * 0.15) * 4;
+            ctx.fillStyle = "#494447";
+            ctx.strokeStyle = "#5b5459";
+            ctx.lineWidth = 1.5;
             
             ctx.beginPath();
-            ctx.moveTo(cx - 30, py);
-            ctx.bezierCurveTo(cx - 70, py - 30 + wingFlap, cx - 60, py + 10 + wingFlap, cx - 30, py + 15);
+            ctx.moveTo(cx - 24, py);
+            ctx.bezierCurveTo(cx - 55, py - 22 + wingFlap, cx - 45, py + 8 + wingFlap, cx - 24, py + 12);
             ctx.fill(); ctx.stroke();
             
             ctx.beginPath();
-            ctx.moveTo(cx + 30, py);
-            ctx.bezierCurveTo(cx + 70, py - 30 + wingFlap, cx + 60, py + 10 + wingFlap, cx + 30, py + 15);
+            ctx.moveTo(cx + 24, py);
+            ctx.bezierCurveTo(cx + 55, py - 22 + wingFlap, cx + 45, py + 8 + wingFlap, cx + 24, py + 12);
             ctx.fill(); ctx.stroke();
             ctx.restore();
         }
 
         if (g2Lvl > 0) {
-            ctx.fillStyle = "#ff9ebb";
-            ctx.strokeStyle = "#fff";
-            ctx.lineWidth = 2;
+            ctx.fillStyle = "#ff6188";
             ctx.beginPath();
-            ctx.moveTo(cx - 32, py - 15);
-            ctx.lineTo(cx - 45, py - 42);
-            ctx.lineTo(cx - 18, py - 28);
-            ctx.closePath(); ctx.fill(); ctx.stroke();
+            ctx.moveTo(cx - 26, py - 12);
+            ctx.lineTo(cx - 36, py - 32);
+            ctx.lineTo(cx - 15, py - 22);
+            ctx.closePath(); ctx.fill();
             ctx.beginPath();
-            ctx.moveTo(cx + 32, py - 15);
-            ctx.lineTo(cx + 45, py - 42);
-            ctx.lineTo(cx + 18, py - 28);
-            ctx.closePath(); ctx.fill(); ctx.stroke();
+            ctx.moveTo(cx + 26, py - 12);
+            ctx.lineTo(cx + 36, py - 32);
+            ctx.lineTo(cx + 15, py - 22);
+            ctx.closePath(); ctx.fill();
         }
 
-        var petColor = "#ffb3c6";
-        if(db.satiety <= 0) petColor = "#b8b0b2";
-        else if(petAction == "happy") petColor = "#ff758f";
+        var petColor = "#938aa9";
+        if(db.satiety <= 0) petColor = "#524f54";
+        else if(petAction == "happy") petColor = "#ab9df2";
 
-        drawEllipse(ctx, cx, py + 5, 42 + breathe, 32 - breathe, petColor);
-        drawEllipse(ctx, cx - 38, py + 18, 10, 10, petColor);
+        drawEllipse(ctx, cx, py + 4, 34 + breathe, 26 - breathe, petColor);
+        drawEllipse(ctx, cx - 30, py + 14, 8, 8, petColor);
 
-        var eyeW = 4;
-        var eyeH = 6;
-        var blink = (animFrame % 60 > 56);
+        var eyeW = 3;
+        var eyeH = 5;
+        var blink = (animFrame % 65 > 61);
         
-        ctx.fillStyle = "#4a3338";
+        ctx.fillStyle = "#2d2a2e";
         
         if (db.satiety <= 0) {
             ctx.lineWidth = 2;
-            ctx.strokeStyle = "#4a3338";
-            ctx.beginPath(); ctx.moveTo(cx - 16, py - 2); ctx.lineTo(cx - 10, py + 2); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx + 10, py + 2); ctx.lineTo(cx + 16, py - 2); ctx.stroke();
-            ctx.beginPath(); ctx.arc(cx, py + 14, 5, Math.PI, 0); ctx.stroke();
+            ctx.strokeStyle = "#2d2a2e";
+            ctx.beginPath(); ctx.moveTo(cx - 12, py - 2); ctx.lineTo(cx - 8, py + 2); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 8, py + 2); ctx.lineTo(cx + 12, py - 2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx, py + 11, 4, Math.PI, 0); ctx.stroke();
         } else if (petAction == "happy") {
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = "#4a3338";
-            ctx.beginPath(); ctx.arc(cx - 14, py, 4, Math.PI, 0); ctx.stroke();
-            ctx.beginPath(); ctx.arc(cx + 14, py, 4, Math.PI, 0); ctx.stroke();
-            ctx.fillStyle = "#ff4f70";
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#2d2a2e";
+            ctx.beginPath(); ctx.arc(cx - 10, py, 3, Math.PI, 0); ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx + 10, py, 3, Math.PI, 0); ctx.stroke();
+            ctx.fillStyle = "#ff6188";
             ctx.beginPath();
-            ctx.arc(cx, py + 6, 6, 0, Math.PI);
+            ctx.arc(cx, py + 5, 4, 0, Math.PI);
             ctx.fill();
         } else {
             if (!blink) {
-                drawEllipse(ctx, cx - 14, py, eyeW, eyeH, "#4a3338");
-                drawEllipse(ctx, cx + 14, py, eyeW, eyeH, "#4a3338");
-                drawEllipse(ctx, cx - 15, py - 2, 1.5, 2, "#fff");
-                drawEllipse(ctx, cx + 13, py - 2, 1.5, 2, "#fff");
+                drawEllipse(ctx, cx - 10, py, eyeW, eyeH, "#2d2a2e");
+                drawEllipse(ctx, cx + 10, py, eyeW, eyeH, "#2d2a2e");
+                drawEllipse(ctx, cx - 10.5, py - 1.5, 1, 1.5, "#fff");
+                drawEllipse(ctx, cx + 9.5, py - 1.5, 1, 1.5, "#fff");
             } else {
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = "#4a3338";
-                ctx.beginPath(); ctx.moveTo(cx - 18, py); ctx.lineTo(cx - 10, py); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(cx + 10, py); ctx.lineTo(cx + 18, py); ctx.stroke();
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = "#2d2a2e";
+                ctx.beginPath(); ctx.moveTo(cx - 13, py); ctx.lineTo(cx - 7, py); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(cx + 7, py); ctx.lineTo(cx + 13, py); ctx.stroke();
             }
-            drawEllipse(ctx, cx - 22, py + 6, 6, 3, "rgba(255, 94, 126, 0.5)");
-            drawEllipse(ctx, cx + 22, py + 6, 6, 3, "rgba(255, 94, 126, 0.5)");
+            drawEllipse(ctx, cx - 17, py + 5, 4, 2, "rgba(255, 97, 136, 0.3)");
+            drawEllipse(ctx, cx + 17, py + 5, 4, 2, "rgba(255, 97, 136, 0.3)");
             
-            ctx.lineWidth = 1.5;
-            ctx.strokeStyle = "#4a3338";
-            ctx.beginPath(); ctx.arc(cx - 3, py + 6, 3, 0, Math.PI); ctx.stroke();
-            ctx.beginPath(); ctx.arc(cx + 3, py + 6, 3, 0, Math.PI); ctx.stroke();
+            ctx.lineWidth = 1.2;
+            ctx.strokeStyle = "#2d2a2e";
+            ctx.beginPath(); ctx.arc(cx - 2, py + 5, 2, 0, Math.PI); ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx + 2, py + 5, 2, 0, Math.PI); ctx.stroke();
         }
 
         if (g4Lvl > 0) {
             ctx.save();
-            ctx.translate(cx, py - 30);
-            ctx.fillStyle = "#ffd23f";
-            ctx.strokeStyle = "#e5a93b";
-            ctx.lineWidth = 1.5;
+            ctx.translate(cx, py - 22);
+            ctx.fillStyle = "#ffd866";
             ctx.beginPath();
-            ctx.moveTo(-12, 0);
-            ctx.lineTo(-15, -10);
-            ctx.lineTo(-6, -4);
-            ctx.lineTo(0, -16);
-            ctx.lineTo(6, -4);
-            ctx.lineTo(15, -10);
-            ctx.lineTo(12, 0);
+            ctx.moveTo(-9, 0);
+            ctx.lineTo(-11, -7);
+            ctx.lineTo(-5, -3);
+            ctx.lineTo(0, -12);
+            ctx.lineTo(5, -3);
+            ctx.lineTo(11, -7);
+            ctx.lineTo(9, 0);
             ctx.closePath();
-            ctx.fill(); ctx.stroke();
-            
-            ctx.fillStyle = "#ff4757";
-            ctx.beginPath(); ctx.arc(0, -18, 2.5, 0, Math.PI*2); ctx.fill();
+            ctx.fill();
             ctx.restore();
         }
 
         if (g5Lvl > 0) {
-            var orbCount = Math.min(5, g5Lvl);
+            var orbCount = Math.min(4, g5Lvl);
             for (var i = 0; i < orbCount; i++) {
                 var angle = (animFrame * 0.05) + (i * (Math.PI * 2) / orbCount);
-                var orbX = cx + Math.cos(angle) * 65;
-                var orbY = py + Math.sin(angle) * 20;
+                var orbX = cx + Math.cos(angle) * 50;
+                var orbY = py + Math.sin(angle) * 15;
                 
                 ctx.save();
                 ctx.beginPath();
-                ctx.arc(orbX, orbY, 5, 0, Math.PI * 2);
-                var grad = ctx.createRadialGradient(orbX, orbY, 1, orbX, orbY, 5);
+                ctx.arc(orbX, orbY, 4, 0, Math.PI * 2);
+                var grad = ctx.createRadialGradient(orbX, orbY, 1, orbX, orbY, 4);
                 grad.addColorStop(0, "#fff");
-                grad.addColorStop(1, "#70e1ff");
+                grad.addColorStop(1, "#78dce8");
                 ctx.fillStyle = grad;
-                ctx.shadowBlur = 6;
-                ctx.shadowColor = "#70e1ff";
                 ctx.fill();
                 ctx.restore();
             }
