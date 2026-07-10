@@ -1,519 +1,509 @@
-<HTML>
-<HEAD>
-<TITLE>我的夢幻萌寵</TITLE>
-<META HTTP-EQUIV="X-UA-Compatible" CONTENT="IE=edge">
-<META CHARSET="utf-8">
-<HTA:APPLICATION 
-    ID="oPetGame"
-    APPLICATIONNAME="CutePetDesktop"
-    BORDER="none"
-    BORDERSTYLE="normal"
-    CAPTION="no"
-    ICON=""
-    MAXIMIZEBUTTON="no"
-    MINIMIZEBUTTON="no"
-    SHOWINTASKBAR="yes"
-    SINGLEINSTANCE="yes"
-    SYSMENU="no"
-    WINDOWSTATE="normal"
-/>
-<STYLE>
-    * { box-sizing: border-box; user-select: none; -webkit-user-select: none; font-family: "Microsoft JhengHei", sans-serif; }
-    body { margin: 0; padding: 0; background: #232125; color: #e3dec3; overflow: hidden; font-size: 12px; }
-    #win-chrome { width: 400px; height: 520px; background: #2d2a2e; border: 2px solid #443f43; display: flex; flex-direction: column; position: relative; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border-radius: 8px; }
-    #title-bar { height: 32px; background: #222022; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; border-bottom: 1px solid #3a363a; }
-    .title-text { font-size: 11px; font-weight: bold; color: #ab9df2; letter-spacing: 1px; }
-    .win-btn { width: 20px; height: 20px; background: #3a363a; border: none; color: #ff6188; cursor: pointer; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; border-radius: 4px; }
-    .win-btn:hover { background: #ff6188; color: #2d2a2e; }
-    
-    #tabs-header { display: flex; background: #222022; border-bottom: 1px solid #3a363a; padding: 0 4px; }
-    .tab-link { padding: 8px 16px; background: transparent; border: none; color: #787176; cursor: pointer; font-size: 12px; font-weight: bold; border-bottom: 2px solid transparent; transition: all 0.2s; }
-    .tab-link:hover { color: #e3dec3; }
-    .tab-link.active { color: #a9dc76; border-bottom-color: #a9dc76; background: rgba(169,220,118,0.05); }
-    
-    .tab-content { display: none; flex: 1; flex-direction: column; padding: 12px; height: 418px; overflow: hidden; }
-    .tab-content.active { display: flex; }
-    
-    .panel { background: #222022; border: 1px solid #3a363a; border-radius: 6px; display: flex; flex-direction: column; margin-bottom: 10px; }
-    .panel-header { background: #2d2a2e; padding: 6px 10px; border-bottom: 1px solid #3a363a; font-size: 11px; font-weight: bold; color: #787176; display: flex; justify-content: space-between; border-radius: 5px 5px 0 0; }
-    
-    #canvas-container { height: 180px; position: relative; display: flex; justify-content: center; align-items: center; background: #1e1c1e; cursor: pointer; border-radius: 6px; overflow: hidden; border: 1px solid #3a363a; margin-bottom: 10px; }
-    #dmg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-    .pop-text { position: absolute; font-weight: bold; pointer-events: none; font-size: 13px; animation: pMove 0.6s ease-out forwards; }
-    @keyframes pMove { 0% { transform: translateY(0); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(-40px); opacity: 0; } }
-    
-    .curr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
-    .curr-box { background: #222022; border: 1px solid #3a363a; padding: 8px; border-radius: 6px; text-align: center; }
-    .curr-lbl { font-size: 11px; color: #787176; margin-bottom: 2px; }
-    .curr-val { font-size: 14px; font-weight: bold; color: #ffd866; font-family: Arial; }
-    
-    .hud-box { padding: 8px; border-top: 1px solid #3a363a; background: #222022; border-radius: 0 0 5px 5px; }
-    .hud-row { display: flex; justify-content: space-between; font-size: 11px; color: #787176; margin-bottom: 4px; }
-    .bar-container { height: 5px; background: #1e1c1e; border-radius: 3px; overflow: hidden; }
-    .bar-fill { height: 100%; width: 0%; transition: width 0.1s linear; }
-    
-    .scroller { flex: 1; overflow-y: scroll; display: flex; flex-direction: column; gap: 6px; }
-    .scroller::-webkit-scrollbar { width: 4px; }
-    .scroller::-webkit-scrollbar-track { background: transparent; }
-    .scroller::-webkit-scrollbar-thumb { background: #3a363a; border-radius: 2px; }
-    
-    .card { background: #222022; border: 1px solid #3a363a; border-radius: 6px; padding: 8px; display: flex; justify-content: space-between; align-items: center; }
-    .card-meta { display: flex; flex-direction: column; gap: 2px; width: 240px; }
-    .card-title { font-size: 12px; font-weight: bold; color: #e3dec3; }
-    .card-desc { font-size: 11px; color: #787176; }
-    .card-cost { font-size: 11px; font-weight: bold; color: #ff6188; margin-top: 1px; }
-    
-    .btn-action { background: #3a363a; border: 1px solid #4d464b; border-radius: 4px; color: #e3dec3; padding: 5px 10px; min-width: 65px; text-align: center; cursor: pointer; font-size: 11px; font-weight: bold; }
-    .btn-action:hover:not(:disabled) { background: #4d464b; border-color: #787176; color: #fff; }
-    .btn-action:active:not(:disabled) { transform: scale(0.96); }
-    .btn-action:disabled { background: #1e1c1e; border-color: #222022; color: #443f43; cursor: not-allowed; }
-    
-    #log-stream { flex: 1; padding: 6px; font-size: 11px; color: #787176; display: flex; flex-direction: column; justify-content: flex-end; line-height: 1.5; }
-</STYLE>
-</HEAD>
-<BODY>
-
-<DIV ID="win-chrome">
-    <DIV ID="title-bar">
-        <DIV CLASS="title-text">🪐 萌寵觀測箱</DIV>
-        <BUTTON CLASS="win-btn" ONCLICK="window.close()">✕</BUTTON>
-    </DIV>
-
-    <DIV ID="tabs-header">
-        <BUTTON CLASS="tab-link active" ONCLICK="switchTab('tab-main', this)">狀態</BUTTON>
-        <BUTTON CLASS="tab-link" ONCLICK="switchTab('tab-shop', this)">商店</BUTTON>
-        <BUTTON CLASS="tab-link" ONCLICK="switchTab('tab-log', this)">日誌</BUTTON>
-    </DIV>
-
-    <DIV ID="tab-main" CLASS="tab-content active">
-        <DIV ID="canvas-container" ONCLICK="execManualClick(event)">
-            <CANVAS ID="viewCanvas" WIDTH="374" HEIGHT="180"></CANVAS>
-            <DIV ID="dmg-layer"></DIV>
-        </DIV>
-        
-        <DIV CLASS="curr-grid">
-            <DIV CLASS="curr-box">
-                <DIV CLASS="curr-lbl">金幣</DIV>
-                <DIV CLASS="curr-val" ID="v-gold">0</DIV>
-            </DIV>
-            <DIV CLASS="curr-box">
-                <DIV CLASS="curr-lbl">幻星</DIV>
-                <DIV CLASS="curr-val" ID="v-shards" STYLE="color:#78dce8;">0</DIV>
-            </DIV>
-        </DIV>
-
-        <DIV CLASS="panel" STYLE="margin-top:2px;">
-            <DIV CLASS="panel-header"><SPAN ID="pet-state-lbl">運作中</SPAN><SPAN ID="stage-board">--</SPAN></DIV>
-            <DIV CLASS="hud-box">
-                <DIV CLASS="hud-row"><SPAN>飽食度</SPAN><SPAN ID="lbl-satiety">100%</SPAN></DIV>
-                <DIV CLASS="bar-container"><DIV ID="bar-satiety" CLASS="bar-fill" STYLE="background:#ff6188;"></DIV></DIV>
-                <DIV CLASS="hud-row" STYLE="margin-top:8px;"><SPAN>心情凝聚度</SPAN><SPAN ID="lbl-mood">0.0s</SPAN></DIV>
-                <DIV CLASS="bar-container"><DIV ID="bar-mood" CLASS="bar-fill" STYLE="background:#78dce8;"></DIV></DIV>
-            </DIV>
-        </DIV>
-    </DIV>
-
-    <DIV ID="tab-shop" CLASS="tab-content">
-        <DIV CLASS="scroller" ID="scroller-gear"></DIV>
-    </DIV>
-
-    <DIV ID="tab-log" CLASS="tab-content">
-        <DIV CLASS="panel" STYLE="flex:1; margin:0;">
-            <DIV ID="log-stream"></DIV>
-        </DIV>
-    </DIV>
-</DIV>
-
-<SCRIPT>
-    window.resizeTo(400, 520);
-    window.moveTo((window.screen.availWidth - 400) / 2, (window.screen.availHeight - 520) / 2);
-
-    var db = {
-        gold: 0,
-        shards: 0,
-        totalGears: 0,
-        satiety: 100,
-        moodProgress: 0,
-        lastTick: new Date().getTime(),
-        gear: {
-            g1: { id: "g1", name: "🍼 營養補給物資", lvl: 0, baseCost: 15, costMult: 1.25, val: 1, desc: "+1 金幣/週期，補給 20% 飽食度", costType: "gold" },
-            g2: { id: "g2", name: "🐱 裝飾性特製貓耳", lvl: 0, baseCost: 40, costMult: 1.25, val: 80, desc: "縮短 80毫秒 產金時間間隔（貓耳體積隨等級放大）", costType: "gold" },
-            g3: { id: "g3", name: "🕊️ 輕質微型雙翼", lvl: 0, baseCost: 120, costMult: 1.28, val: 1, desc: "每週期有機率獲得幻星（雙翼尺寸隨等級放大）", costType: "gold" },
-            g4: { id: "g4", name: "👑 小型精製金屬冕", lvl: 0, baseCost: 350, costMult: 1.30, val: 0.15, desc: "全圖生產收益永久提升 15%（王冠隨等級放大變寬）", costType: "gold" },
-            g5: { id: "g5", name: "🔮 軌道控制干涉制導球", lvl: 0, baseCost: 3, costMult: 1.30, val: 0.5, desc: "手動點擊收益提升 50%（魔法球環繞數量隨等級增加）", costType: "shards" }
+<!DOCTYPE html>
+<html>
+<head>
+    <title>豪華轉職：掛機冒險</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            font-family: "Microsoft JhengHei", sans-serif;
         }
-    };
-
-    var cfg = {
-        baseAutoInt: 3000,
-        baseMoodInt: 6000,
-        canvasW: 374,
-        canvasH: 180
-    };
-
-    var cvs, ctx, animFrame = 0, petAction = "idle", actionTimer = 0;
-
-    function boot() {
-        cvs = document.getElementById("viewCanvas");
-        ctx = cvs.getContext("2d");
-        buildUI();
-        tick();
-        setInterval(tick, 40);
-        pushLog("環境觀測連線成功。");
-    }
-
-    function switchTab(tabId, btn) {
-        var contents = document.getElementsByClassName("tab-content");
-        for (var i = 0; i < contents.length; i++) contents[i].className = "tab-content";
-        var links = document.getElementsByClassName("tab-link");
-        for (var i = 0; i < links.length; i++) links[i].className = "tab-link";
-        document.getElementById(tabId).className = "tab-content active";
-        btn.className = "tab-link active";
-    }
-
-    function buildUI() {
-        var html = "";
-        for (var k in db.gear) {
-            var item = db.gear[k];
-            html += '<DIV CLASS="card" ID="c-gear-' + item.id + '">' +
-                    '<DIV CLASS="card-meta">' +
-                    '<SPAN CLASS="card-title" ID="lbl-name-' + item.id + '">' + item.name + '</SPAN>' +
-                    '<SPAN CLASS="card-desc">' + item.desc + '</SPAN>' +
-                    '<SPAN CLASS="card-cost" ID="lbl-cost-' + item.id + '">--</SPAN>' +
-                    '</DIV>' +
-                    '<BUTTON CLASS="btn-action" ID="btn-gear-' + item.id + '" ONCLICK="buyGear(\'' + item.id + '\')">升級</BUTTON>' +
-                    '</DIV>';
+        body {
+            margin: 0;
+            padding: 10px;
+            background-color: #1a1a2e;
+            color: #ffffff;
+            overflow: hidden;
         }
-        document.getElementById("scroller-gear").innerHTML = html;
-        syncData();
-    }
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        /* 頂部資訊 */
+        .header {
+            text-align: center;
+            background: #162447;
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #0f3460;
+        }
+        .gold-display {
+            font-size: 20px;
+            font-weight: bold;
+            color: #f1c40f;
+            text-shadow: 0 0 5px rgba(241, 196, 15, 0.5);
+        }
+        .stats-display {
+            font-size: 11px;
+            color: #a2a8d3;
+            margin-top: 3px;
+        }
+        /* 遊戲主體分割 */
+        .main-content {
+            display: flex;
+            flex: 1;
+            gap: 10px;
+            height: 320px;
+        }
+        /* 角色區域 */
+        .character-area {
+            position: relative;
+            width: 180px;
+            background: #1f4068;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border: 2px solid #e43f5a;
+            overflow: hidden;
+        }
+        .character-area:active {
+            transform: scale(0.98);
+        }
+        #charCanvas {
+            background: transparent;
+        }
+        /* 漂浮文字容器 */
+        #float-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .float-text {
+            position: absolute;
+            color: #f1c40f;
+            font-weight: bold;
+            font-size: 16px;
+            text-shadow: 1px 1px 2px #000;
+            animation: floatUp 0.8s ease-out forwards;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0px); opacity: 1; }
+            100% { transform: translateY(-60px); opacity: 0; }
+        }
+        /* 商城區域 */
+        .shop-area {
+            flex: 1;
+            background: #162447;
+            border-radius: 8px;
+            padding: 8px;
+            overflow-y: auto;
+            border: 1px solid #0f3460;
+        }
+        .shop-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #e43f5a;
+            margin-bottom: 8px;
+            text-align: center;
+            border-bottom: 1px solid #0f3460;
+            padding-bottom: 3px;
+        }
+        .shop-item {
+            background: #1f4068;
+            border-radius: 6px;
+            padding: 6px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid transparent;
+        }
+        .shop-item:hover {
+            border-color: #a2a8d3;
+        }
+        .item-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .item-name {
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+        }
+        .item-desc {
+            font-size: 10px;
+            color: #a2a8d3;
+        }
+        .btn-upgrade {
+            background: #e43f5a;
+            border: none;
+            color: white;
+            padding: 5px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .btn-upgrade:hover {
+            background: #ff4a6a;
+        }
+        .btn-upgrade:disabled {
+            background: #4e5166;
+            color: #95a5a6;
+            cursor: not-allowed;
+        }
+    </style>
+    
+    <hta:application 
+        id="idleGame"
+        applicationname="IdleGame"
+        border="thin"
+        borderstyle="normal"
+        caption="yes"
+        icon=""
+        maximizebutton="no"
+        minimizebutton="yes"
+        showintaskbar="yes"
+        singleinstance="yes"
+        sysmenu="yes"
+        windowstate="normal"
+    />
 
-    function getCost(item) {
-        return Math.floor(item.baseCost * Math.pow(item.costMult, item.lvl));
-    }
+    <script>
+        // 初始化視窗大小與位置
+        window.resizeTo(480, 460);
+        window.moveTo(window.screen.availWidth - 500, 100);
 
-    function syncData() {
-        document.getElementById("v-gold").innerText = db.gold;
-        document.getElementById("v-shards").innerText = db.shards;
-
-        db.totalGears = 0;
-        for (var k in db.gear) {
-            var item = db.gear[k];
-            var cost = getCost(item);
-            db.totalGears += item.lvl;
-            document.getElementById("lbl-name-" + item.id).innerText = item.name + " [Lv." + item.lvl + "]";
+        // 遊戲核心數據
+        var gameState = {
+            gold: 0,
+            baseGold: 1,      // 每次獲得的基礎金幣
+            goldMultiplier: 1, // 金幣倍率 (由裝備提供)
+            baseInterval: 2000, // 基礎間隔 (毫秒)
+            intervalReduction: 0, // 減少的時間 (毫秒)
+            clickPower: 1,     // 點擊獲得的金幣
             
-            var cSign = item.costType == "gold" ? " 金幣" : " 幻星";
-            document.getElementById("lbl-cost-" + item.id).innerText = "需求: " + cost + cSign;
-            
-            if (item.costType == "gold") {
-                document.getElementById("btn-gear-" + item.id).disabled = (db.gold < cost);
-            } else {
-                document.getElementById("btn-gear-" + item.id).disabled = (db.shards < cost);
+            // 裝備系統 (與外觀渲染連動)
+            upgrades: {
+                sword:  { name: "光能巨劍", lvl: 0, max: 5, cost: 10,  costMult: 1.8, desc: "+1 基礎金幣" },
+                shield: { name: "脈衝重盾", lvl: 0, max: 5, cost: 30,  costMult: 2.0, desc: "減少 150ms 間隔" },
+                armor:  { name: "納米重鎧", lvl: 0, max: 5, cost: 100, costMult: 2.2, desc: "+50% 總金幣收益" },
+                crown:  { name: "不朽王冠", lvl: 0, max: 5, cost: 500, costMult: 2.5, desc: "點擊效果大幅增強" }
             }
-        }
-
-        var stageStr = "原型體";
-        if (db.totalGears >= 5) stageStr = "變異株";
-        if (db.totalGears >= 12) stageStr = "進化型";
-        if (db.totalGears >= 22) stageStr = "完全體";
-        document.getElementById("stage-board").innerText = "型態: " + stageStr;
-
-        document.getElementById("lbl-satiety").innerText = db.satiety + "%";
-        document.getElementById("lbl-mood").innerText = (getMoodInterval() / 1000).toFixed(1) + "s";
-    }
-
-    function getAutoInterval() {
-        return Math.max(800, cfg.baseAutoInt - (db.gear.g2.lvl * db.gear.g2.val));
-    }
-
-    function getMoodInterval() {
-        return cfg.baseMoodInt;
-    }
-
-    function buyGear(id) {
-        var item = db.gear[id];
-        var cost = getCost(item);
-        if (item.costType == "gold" && db.gold >= cost) {
-            db.gold -= cost;
-            item.lvl++;
-            petAction = "happy"; actionTimer = 20;
-            pushLog("已加載補強單元: " + item.name + " 升至 Lv." + item.lvl);
-            if(id == "g1") db.satiety = Math.min(100, db.satiety + 20);
-            syncData();
-        } else if (item.costType == "shards" && db.shards >= cost) {
-            db.shards -= cost;
-            item.lvl++;
-            petAction = "happy"; actionTimer = 20;
-            pushLog("已部署模組組件: " + item.name + " 升至 Lv." + item.lvl);
-            syncData();
-        }
-    }
-
-    function getOutputValues() {
-        var gAdd = 1 + (db.gear.g1.lvl * db.gear.g1.val);
-        var sAdd = 0;
-        if(db.gear.g3.lvl > 0 && Math.random() < 0.15) {
-            sAdd = db.gear.g3.lvl;
-        }
-        var mult = 1 + (db.gear.g4.lvl * db.gear.g4.val);
-        return {
-            gold: Math.floor(gAdd * mult),
-            shards: sAdd
         };
-    }
 
-    function tick() {
-        var now = new Date().getTime();
-        var delta = now - db.lastTick;
-        db.lastTick = now;
+        var gameTimer = null;
+        var canvas, ctx;
+        var animAngle = 0; // 用於角色動態懸浮效果
 
-        animFrame++;
-        if (actionTimer > 0) {
-            actionTimer--;
-            if (actionTimer <= 0) petAction = "idle";
+        // 啟動初始化
+        function init() {
+            canvas = document.getElementById("charCanvas");
+            ctx = canvas.getContext("2d");
+            
+            updateUI();
+            startTimer();
+            
+            // 每一秒渲染 30 次動畫
+            setInterval(renderCharacter, 33);
         }
 
-        var autoInt = getAutoInterval();
-        if (db.satiety > 0) {
-            var out = getOutputValues();
-            if (animFrame % Math.floor(autoInt/40) === 0) {
-                db.gold += out.gold;
-                popText(cfg.canvasW / 2, 50, "+" + out.gold, "#ffd866");
-                
-                if (out.shards > 0) {
-                    db.shards += out.shards;
-                    popText(cfg.canvasW / 2 + 25, 65, "+" + out.shards + "⭐", "#78dce8");
+        // 動態計算當前間隔
+        function getCurrentInterval() {
+            var current = gameState.baseInterval - (gameState.upgrades.shield.lvl * 150);
+            return Math.max(400, current); // 最快 0.4 秒一次
+        }
+
+        // 動態計算單次掛機收益
+        function getIdleIncome() {
+            var base = gameState.baseGold + (gameState.upgrades.sword.lvl * 1);
+            var mult = 1 + (gameState.upgrades.armor.lvl * 0.5);
+            return Math.floor(base * mult);
+        }
+
+        // 動態計算點擊收益
+        function getClickIncome() {
+            var base = gameState.clickPower + (gameState.upgrades.sword.lvl * 0.5);
+            var crownBonus = 1 + (gameState.upgrades.crown.lvl * 1.5);
+            return Math.floor(base * crownBonus);
+        }
+
+        // 控制掛機計時器
+        function startTimer() {
+            if (gameTimer) clearInterval(gameTimer);
+            gameTimer = setInterval(function() {
+                var amount = getIdleIncome();
+                addGold(amount);
+            }, getCurrentInterval());
+        }
+
+        // 增加金幣與觸發數字彈窗
+        function addGold(amount) {
+            gameState.gold += amount;
+            createFloatText("+" + amount);
+            updateUI();
+        }
+
+        // 玩家手動點擊角色
+        function onCharacterClick() {
+            var amount = getClickIncome();
+            addGold(amount);
+            // 點擊時讓計時器重置，變相「加快」下一次獲得速度
+            startTimer();
+        }
+
+        // 浮動文字生成
+        function createFloatText(text) {
+            var container = document.getElementById("float-container");
+            var el = document.createElement("div");
+            el.className = "float-text";
+            el.innerText = text;
+            
+            // 隨機在角色頭部上方左右偏離
+            var randomX = Math.floor(Math.random() * 60) + 60; 
+            el.style.left = randomX + "px";
+            el.style.top = "60px";
+            
+            container.appendChild(el);
+            
+            // 動態動畫結束後移除節點
+            setTimeout(function() {
+                if(el && el.parentNode) {
+                    container.removeChild(el);
                 }
+            }, 800);
+        }
+
+        // 購買與升級裝備
+        function buyUpgrade(type) {
+            var upg = gameState.upgrades[type];
+            if (gameState.gold >= upg.cost && upg.lvl < upg.max) {
+                gameState.gold -= upg.cost;
+                upg.lvl++;
+                upg.cost = Math.floor(upg.cost * upg.costMult);
                 
-                if (Math.random() < 0.05) db.satiety = Math.max(0, db.satiety - 1);
+                updateUI();
+                startTimer(); // 更新計時器間隔
             }
         }
 
-        var moodInt = getMoodInterval();
-        db.moodProgress += delta;
-        if (db.moodProgress >= moodInt) {
-            db.moodProgress = 0;
-            if(db.satiety > 20) {
-                db.shards += 1;
-                popText(cfg.canvasW / 2 - 30, 75, "+1⭐", "#78dce8");
-                pushLog("生物特徵穩定，聚合產出微量幻星");
-            }
-        }
-        document.getElementById("bar-mood").style.width = Math.min(100, (db.moodProgress / moodInt) * 100) + "%";
-        document.getElementById("bar-satiety").style.width = db.satiety + "%";
+        // 更新介面文字與按鈕狀態
+        function updateUI() {
+            document.getElementById("gold-val").innerText = gameState.gold;
+            document.getElementById("gsec-val").innerText = (getIdleIncome() / (getCurrentInterval() / 1000)).toFixed(1);
+            document.getElementById("gint-val").innerText = (getCurrentInterval() / 1000).toFixed(2);
 
-        if (db.satiety <= 0) {
-            document.getElementById("pet-state-lbl").innerText = "極度飢餓";
-            document.getElementById("pet-state-lbl").style.color = "#ff6188";
-        } else {
-            document.getElementById("pet-state-lbl").innerText = "生命特徵運作中";
-            document.getElementById("pet-state-lbl").style.color = "#a9dc76";
-        }
-
-        syncData();
-        render();
-    }
-
-    function execManualClick(e) {
-        var rect = cvs.getBoundingClientRect();
-        var x = e.clientX - rect.left;
-        var y = e.clientY - rect.top;
-
-        var gAdd = 1 + (db.gear.g1.lvl * 0.5);
-        var clickAmp = 1 + (db.gear.g5.lvl * db.gear.g5.val);
-        var clickGold = Math.floor(gAdd * clickAmp);
-        
-        db.gold += clickGold;
-        popText(x, y, "撫摸 +" + clickGold, "#ff6188");
-        
-        petAction = "happy";
-        actionTimer = 25;
-
-        db.moodProgress += Math.floor(getMoodInterval() * 0.04);
-        syncData();
-    }
-
-    function popText(x, y, txt, color) {
-        var container = document.getElementById("dmg-layer");
-        var el = document.createElement("div");
-        el.className = "pop-text";
-        el.style.left = (x - 40) + "px";
-        el.style.top = (y - 15) + "px";
-        el.style.color = color;
-        el.innerText = txt;
-        container.appendChild(el);
-        setTimeout(function() { if(el && el.parentNode) container.removeChild(el); }, 600);
-    }
-
-    function pushLog(txt) {
-        var s = document.getElementById("log-stream");
-        var line = document.createElement("div");
-        line.innerText = "> " + txt;
-        s.appendChild(line);
-        if (s.childNodes.length > 15) s.removeChild(s.firstChild);
-    }
-
-    function drawEllipse(ctx, cx, cy, rx, ry, color) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.translate(cx, cy);
-        ctx.scale(rx, ry);
-        ctx.arc(0, 0, 1, 0, Math.PI * 2);
-        ctx.fillStyle = color;
-        ctx.fill();
-        ctx.restore();
-    }
-
-    function render() {
-        ctx.clearRect(0, 0, cfg.canvasW, cfg.canvasH);
-
-        var cx = cfg.canvasW / 2;
-        var cy = cfg.canvasH / 2 + 10;
-        
-        var breathe = Math.sin(animFrame * 0.08) * 1.5;
-        var floatY = Math.sin(animFrame * 0.04) * 3;
-        
-        var py = cy + floatY;
-
-        var g2Lvl = db.gear.g2.lvl;
-        var g3Lvl = db.gear.g3.lvl;
-        var g4Lvl = db.gear.g4.lvl;
-        var g5Lvl = db.gear.g5.lvl;
-
-        drawEllipse(ctx, cx, cy + 28, 35 + breathe, 7, "rgba(0, 0, 0, 0.3)");
-
-        if (g3Lvl > 0) {
-            ctx.save();
-            var wingFlap = Math.sin(animFrame * 0.15) * 4;
-            ctx.fillStyle = "#494447";
-            ctx.strokeStyle = "#5b5459";
-            ctx.lineWidth = 1.5;
-            
-            var wingSize = 24 + Math.min(25, g3Lvl * 3);
-            
-            ctx.beginPath();
-            ctx.moveTo(cx - 24, py);
-            ctx.bezierCurveTo(cx - 24 - wingSize, py - 22 + wingFlap, cx - 21 - wingSize, py + 8 + wingFlap, cx - 24, py + 12);
-            ctx.fill(); ctx.stroke();
-            
-            ctx.beginPath();
-            ctx.moveTo(cx + 24, py);
-            ctx.bezierCurveTo(cx + 24 + wingSize, py - 22 + wingFlap, cx + 21 + wingSize, py + 8 + wingFlap, cx + 24, py + 12);
-            ctx.fill(); ctx.stroke();
-            ctx.restore();
-        }
-
-        if (g2Lvl > 0) {
-            ctx.fillStyle = "#ff6188";
-            var earW = Math.min(18, 10 + g2Lvl * 1);
-            var earH = Math.min(20, 10 + g2Lvl * 1.5);
-            
-            ctx.beginPath();
-            ctx.moveTo(cx - 26, py - 12);
-            ctx.lineTo(cx - 26 - earW, py - 12 - earH);
-            ctx.lineTo(cx - 26 + earW, py - 12);
-            ctx.closePath(); ctx.fill();
-            
-            ctx.beginPath();
-            ctx.moveTo(cx + 26, py - 12);
-            ctx.lineTo(cx + 26 + earW, py - 12 - earH);
-            ctx.lineTo(cx + 26 - earW, py - 12);
-            ctx.closePath(); ctx.fill();
-        }
-
-        var petColor = "#938aa9";
-        if(db.satiety <= 0) petColor = "#524f54";
-        else if(petAction == "happy") petColor = "#ab9df2";
-
-        drawEllipse(ctx, cx, py + 4, 34 + breathe, 26 - breathe, petColor);
-        drawEllipse(ctx, cx - 30, py + 14, 8, 8, petColor);
-
-        var eyeW = 3;
-        var eyeH = 5;
-        var blink = (animFrame % 65 > 61);
-        
-        ctx.fillStyle = "#2d2a2e";
-        
-        if (db.satiety <= 0) {
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = "#2d2a2e";
-            ctx.beginPath(); ctx.moveTo(cx - 12, py - 2); ctx.lineTo(cx - 8, py + 2); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx + 8, py + 2); ctx.lineTo(cx + 12, py - 2); ctx.stroke();
-            ctx.beginPath(); ctx.arc(cx, py + 11, 4, Math.PI, 0); ctx.stroke();
-        } else if (petAction == "happy") {
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = "#2d2a2e";
-            ctx.beginPath(); ctx.arc(cx - 10, py, 3, Math.PI, 0); stroke();
-            ctx.beginPath(); ctx.arc(cx + 10, py, 3, Math.PI, 0); ctx.stroke();
-            ctx.fillStyle = "#ff6188";
-            ctx.beginPath();
-            ctx.arc(cx, py + 5, 4, 0, Math.PI);
-            ctx.fill();
-        } else {
-            if (!blink) {
-                drawEllipse(ctx, cx - 10, py, eyeW, eyeH, "#2d2a2e");
-                drawEllipse(ctx, cx + 10, py, eyeW, eyeH, "#2d2a2e");
-                drawEllipse(ctx, cx - 10.5, py - 1.5, 1, 1.5, "#fff");
-                drawEllipse(ctx, cx + 9.5, py - 1.5, 1, 1.5, "#fff");
-            } else {
-                ctx.lineWidth = 1.5;
-                ctx.strokeStyle = "#2d2a2e";
-                ctx.beginPath(); ctx.moveTo(cx - 13, py); ctx.lineTo(cx - 7, py); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(cx + 7, py); ctx.lineTo(cx + 13, py); ctx.stroke();
-            }
-            drawEllipse(ctx, cx - 17, py + 5, 4, 2, "rgba(255, 97, 136, 0.3)");
-            drawEllipse(ctx, cx + 17, py + 5, 4, 2, "rgba(255, 97, 136, 0.3)");
-            
-            ctx.lineWidth = 1.2;
-            ctx.strokeStyle = "#2d2a2e";
-            ctx.beginPath(); ctx.arc(cx - 2, py + 5, 2, 0, Math.PI); ctx.stroke();
-            ctx.beginPath(); ctx.arc(cx + 2, py + 5, 2, 0, Math.PI); ctx.stroke();
-        }
-
-        if (g4Lvl > 0) {
-            ctx.save();
-            ctx.translate(cx, py - 22);
-            ctx.fillStyle = "#ffd866";
-            
-            var crownW = Math.min(22, 9 + g4Lvl * 1.5);
-            var crownH = Math.min(18, 7 + g4Lvl * 1);
-            
-            ctx.beginPath();
-            ctx.moveTo(-crownW, 0);
-            ctx.lineTo(-crownW - 2, -crownH + 5);
-            ctx.lineTo(-crownW/2, -crownH/2);
-            ctx.lineTo(0, -crownH - 4);
-            ctx.lineTo(crownW/2, -crownH/2);
-            ctx.lineTo(crownW + 2, -crownH + 5);
-            ctx.lineTo(crownW, 0);
-            ctx.closePath();
-            ctx.fill();
-            ctx.restore();
-        }
-
-        if (g5Lvl > 0) {
-            var orbCount = Math.min(8, g5Lvl);
-            var orbitR = 40 + Math.min(25, g5Lvl * 3);
-            for (var i = 0; i < orbCount; i++) {
-                var angle = (animFrame * 0.05) + (i * (Math.PI * 2) / orbCount);
-                var orbX = cx + Math.cos(angle) * orbitR;
-                var orbY = py + Math.sin(angle) * 15;
+            // 更新四個裝備按鈕
+            for (var key in gameState.upgrades) {
+                var upg = gameState.upgrades[key];
+                var btn = document.getElementById("btn-" + key);
+                var txtLvl = document.getElementById("lvl-" + key);
+                var txtCost = document.getElementById("cost-" + key);
                 
-                ctx.save();
+                txtLvl.innerText = "Lv." + upg.lvl + (upg.lvl >= upg.max ? " (MAX)" : "");
+                
+                if (upg.lvl >= upg.max) {
+                    txtCost.innerText = "已滿級";
+                    btn.disabled = true;
+                } else {
+                    txtCost.innerText = upg.cost + " 金幣";
+                    btn.disabled = (gameState.gold < upg.cost);
+                }
+            }
+        }
+
+        // 純代碼 Canvas 渲染角色外觀
+        function renderCharacter() {
+            if (!ctx) return;
+            
+            // 清除畫布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 基礎懸浮上下晃動物理效果
+            animAngle += 0.05;
+            var hoverY = Math.sin(animAngle) * 5;
+            
+            var centerX = canvas.width / 2;
+            var centerY = canvas.height / 2 + 20 + hoverY;
+            
+            var totalLvl = gameState.upgrades.sword.lvl + 
+                           gameState.upgrades.shield.lvl + 
+                           gameState.upgrades.armor.lvl + 
+                           gameState.upgrades.crown.lvl;
+
+            // 1. 繪製背景魔法陣/光芒 (隨總等級變亮)
+            if (totalLvl > 2) {
                 ctx.beginPath();
-                ctx.arc(orbX, orbY, 4, 0, Math.PI * 2);
-                var grad = ctx.createRadialGradient(orbX, orbY, 1, orbX, orbY, 4);
-                grad.addColorStop(0, "#fff");
-                grad.addColorStop(1, "#78dce8");
-                ctx.fillStyle = grad;
+                var gradientRing = ctx.createRadialGradient(centerX, centerY, 10, centerX, centerY, 60 + totalLvl * 3);
+                gradientRing.addColorStop(0, 'rgba(230, 126, 34, 0.2)');
+                gradientRing.addColorStop(0.5, 'rgba(241, 196, 15, 0.05)');
+                gradientRing.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = gradientRing;
+                ctx.arc(centerX, centerY, 60 + totalLvl * 3, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.restore();
+            }
+
+            // 2. 繪製背部翅膀外觀 (由鎧甲 Armor 等級解鎖)
+            if (gameState.upgrades.armor.lvl >= 2) {
+                ctx.fillStyle = gameState.upgrades.armor.lvl >= 4 ? "#f39c12" : "#95a5a6";
+                // 左翅膀
+                ctx.beginPath();
+                ctx.moveTo(centerX - 15, centerY - 10);
+                ctx.lineTo(centerX - 55, centerY - 30);
+                ctx.lineTo(centerX - 40, centerY + 10);
+                ctx.fill();
+                // 右翅膀
+                ctx.beginPath();
+                ctx.moveTo(centerX + 15, centerY - 10);
+                ctx.lineTo(centerX + 55, centerY - 30);
+                ctx.lineTo(centerX + 40, centerY + 10);
+                ctx.fill();
+            }
+
+            // 3. 繪製角色法陣底座 (隨盾牌 Shield 等級升級)
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = gameState.upgrades.shield.lvl > 0 ? "#3498db" : "#7f8c8d";
+            ctx.save();
+            ctx.translate(centerX, centerY + 40);
+            ctx.scale(1, 0.3);
+            ctx.beginPath();
+            ctx.arc(0, 0, 30 + gameState.upgrades.shield.lvl * 4, 0, Math.PI * 2);
+            ctx.stroke();
+            if (gameState.upgrades.shield.lvl >= 3) {
+                ctx.fillStyle = "rgba(52, 152, 219, 0.3)";
+                ctx.fill();
+            }
+            ctx.restore();
+
+            // 4. 繪製角色本體核心 (隨鎧甲 Armor 等級變得精緻)
+            ctx.beginPath();
+            var bodyColor = "#34495e";
+            if (gameState.upgrades.armor.lvl > 0) bodyColor = "#5271ff";
+            if (gameState.upgrades.armor.lvl >= 3) bodyColor = "#9b59b6";
+            if (gameState.upgrades.armor.lvl == 5) bodyColor = "#1abc9c";
+            ctx.fillStyle = bodyColor;
+            ctx.arc(centerX, centerY, 20, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 核心面具/眼睛
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(centerX - 8, centerY - 4, 4, 4);
+            ctx.fillRect(centerX + 4, centerY - 4, 4, 4);
+
+            // 5. 繪製武器-光能巨劍 (由劍 Sword 等級解鎖與變長)
+            if (gameState.upgrades.sword.lvl > 0) {
+                ctx.lineWidth = 4 + gameState.upgrades.sword.lvl;
+                ctx.strokeStyle = gameState.upgrades.sword.lvl >= 4 ? "#e74c3c" : "#e67e22";
+                ctx.beginPath();
+                // 武器隨時間輕微揮動
+                var swordSwing = Math.sin(animAngle * 2) * 3;
+                ctx.moveTo(centerX - 22, centerY + 15);
+                ctx.lineTo(centerX - 35 - gameState.upgrades.sword.lvl * 3, centerY - 15 + swordSwing);
+                ctx.stroke();
+            }
+
+            // 6. 繪製防具-脈衝重盾 (由盾 Shield 等級解鎖)
+            if (gameState.upgrades.shield.lvl > 0) {
+                ctx.fillStyle = "#2980b9";
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.rect(centerX + 15, centerY - 5, 12, 20 + gameState.upgrades.shield.lvl * 2);
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            // 7. 繪製頭頂裝飾-不朽王冠 (由王冠 Crown 等級解鎖與進化)
+            if (gameState.upgrades.crown.lvl > 0) {
+                ctx.fillStyle = "#f1c40f";
+                var crownY = centerY - 22;
+                ctx.beginPath();
+                ctx.moveTo(centerX - 12, crownY);
+                ctx.lineTo(centerX - 15, crownY - 8 - gameState.upgrades.crown.lvl);
+                ctx.lineTo(centerX - 5, crownY - 4);
+                ctx.lineTo(centerX, crownY - 14 - gameState.upgrades.crown.lvl * 2); // 主冠尖
+                ctx.lineTo(centerX + 5, crownY - 4);
+                ctx.lineTo(centerX + 15, crownY - 8 - gameState.upgrades.crown.lvl);
+                ctx.lineTo(centerX + 12, crownY);
+                ctx.closePath();
+                ctx.fill();
+                
+                // 頂級王冠寶石特效
+                if (gameState.upgrades.crown.lvl >= 3) {
+                    ctx.fillStyle = "#e74c3c";
+                    ctx.beginPath();
+                    ctx.arc(centerX, crownY - 16 - gameState.upgrades.crown.lvl * 2, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
             }
         }
-    }
+    </script>
+</head>
+<body onload="init()">
 
-    window.onload = boot;
-</SCRIPT>
-</BODY>
-</HTML>
+    <div class="container">
+        
+        <div class="header">
+            <div class="gold-display">儲備金幣: <span id="gold-val">0</span> 💰</div>
+            <div class="stats-display">
+                預估時薪: <span id="gsec-val">0.5</span>/秒 | 
+                結算週期: <span id="gint-val">2.00</span>秒
+            </div>
+        </div>
+
+        <div class="main-content">
+            
+            <div class="character-area" onclick="onCharacterClick()">
+                <canvas id="charCanvas" width="180" height="310"></canvas>
+                <div id="float-container"></div>
+            </div>
+
+            <div class="shop-area">
+                <div class="shop-title">皇家軍備整備處</div>
+                
+                <div class="shop-item">
+                    <div class="item-info">
+                        <span class="item-name">⚔️ 光能巨劍 <span id="lvl-sword" style="color:#e67e22">Lv.0</span></span>
+                        <span class="item-desc">加強攻擊力。+1 基礎金幣</span>
+                    </div>
+                    <button class="btn-upgrade" id="btn-sword" onclick="buyUpgrade('sword')">
+                        <span id="cost-sword">10 金幣</span>
+                    </button>
+                </div>
+
+                <div class="shop-item">
+                    <div class="item-info">
+                        <span class="item-name">🛡️ 脈衝重盾 <span id="lvl-shield" style="color:#3498db">Lv.0</span></span>
+                        <span class="item-desc">提高效率。縮短 150ms 掛機間隔</span>
+                    </div>
+                    <button class="btn-upgrade" id="btn-shield" onclick="buyUpgrade('shield')">
+                        <span id="cost-shield">30 金幣</span>
+                    </button>
+                </div>
+
+                <div class="shop-item">
+                    <div class="item-info">
+                        <span class="item-name">🛡️ 納米重鎧 <span id="lvl-armor" style="color:#9b59b6">Lv.0</span></span>
+                        <span class="item-desc">領主威嚴。所有收益提升 50%</span>
+                    </div>
+                    <button class="btn-upgrade" id="btn-armor" onclick="buyUpgrade('armor')">
+                        <span id="cost-armor">100 金幣</span>
+                    </button>
+                </div>
+
+                <div class="shop-item">
+                    <div class="item-info">
+                        <span class="item-name">👑 不朽王冠 <span id="lvl-crown" style="color:#f1c40f">Lv.0</span></span>
+                        <span class="item-desc">神聖加持。大幅增幅點擊產出</span>
+                    </div>
+                    <button class="btn-upgrade" id="btn-crown" onclick="buyUpgrade('crown')">
+                        <span id="cost-crown">500 金幣</span>
+                    </button>
+                </div>
+
+            </div>
+            
+        </div>
+    </div>
+
+</body>
+</html>
