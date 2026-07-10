@@ -1,11 +1,11 @@
 <HTML>
 <HEAD>
-<TITLE>Realm of Alchemist: Eternal Forge</TITLE>
+<TITLE>夢幻萌寵：桌面電子雞養成系統</TITLE>
 <META HTTP-EQUIV="X-UA-Compatible" CONTENT="IE=edge">
 <META CHARSET="utf-8">
 <HTA:APPLICATION 
-    ID="oGame"
-    APPLICATIONNAME="AlchemistForge"
+    ID="oPetGame"
+    APPLICATIONNAME="CutePetDesktop"
     BORDER="none"
     BORDERSTYLE="normal"
     CAPTION="no"
@@ -18,120 +18,103 @@
     WINDOWSTATE="normal"
 />
 <STYLE>
-    * { box-sizing: border-box; user-select: none; -webkit-user-select: none; font-family: 'Segoe UI', Candara, Calibri, Arial, sans-serif; }
-    body { margin: 0; padding: 0; background: #060713; color: #d1d4e0; overflow: hidden; font-size: 12px; }
-    #win-chrome { width: 850px; height: 550px; background: radial-gradient(circle at 50% 0%, #141938 0%, #060713 100%); border: 2px solid #2c3a6b; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
-    #title-bar { height: 32px; background: rgba(10, 14, 38, 0.9); border-bottom: 1px solid #1f2952; display: flex; justify-content: space-between; align-items: center; padding: 0 12px; -webkit-app-region: drag; }
-    .title-text { font-size: 11px; font-weight: bold; letter-spacing: 2px; color: #4facfe; text-shadow: 0 0 5px rgba(79,172,254,0.5); }
-    .win-btn { width: 24px; height: 24px; background: transparent; border: none; color: #6473a1; cursor: pointer; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-    .win-btn:hover { background: #e74c3c; color: white; }
-    #main-layout { display: flex; flex: 1; height: 514px; padding: 12px; gap: 12px; }
-    .panel { background: rgba(13, 17, 43, 0.75); border: 1px solid #1b244d; border-radius: 4px; display: flex; flex-direction: column; position: relative; box-shadow: inset 0 0 15px rgba(0,0,0,0.5); }
-    #left-zone { width: 320px; display: flex; flex-direction: column; gap: 12px; }
-    #center-zone { width: 250px; display: flex; flex-direction: column; gap: 12px; }
+    * { box-sizing: border-box; user-select: none; -webkit-user-select: none; font-family: "Microsoft JhengHei", sans-serif; }
+    body { margin: 0; padding: 0; background: #fff5f7; color: #5a4b51; overflow: hidden; font-size: 12px; }
+    #win-chrome { width: 780px; height: 500px; background: linear-gradient(135deg, #ffeef2 0%, #fff5f7 100%); border: 3px solid #ffb7c5; display: flex; flex-direction: column; position: relative; box-shadow: 0 10px 30px rgba(255,183,197,0.4); border-radius: 12px; }
+    #title-bar { height: 36px; background: #ffb7c5; display: flex; justify-content: space-between; align-items: center; padding: 0 14px; }
+    .title-text { font-size: 13px; font-weight: bold; color: #fff; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+    .win-btn { width: 24px; height: 24px; background: #fff; border: none; color: #ff8b9f; cursor: pointer; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; border-radius: 50%; }
+    .win-btn:hover { background: #ff5e7e; color: white; }
+    #main-layout { display: flex; flex: 1; height: 464px; padding: 12px; gap: 12px; }
+    .panel { background: rgba(255, 255, 255, 0.9); border: 2px solid #ffe3e8; border-radius: 8px; display: flex; flex-direction: column; position: relative; box-shadow: 0 4px 10px rgba(255,183,197,0.1); }
+    #left-zone { width: 300px; display: flex; flex-direction: column; gap: 12px; }
     #right-zone { flex: 1; display: flex; flex-direction: column; gap: 12px; }
-    .panel-header { background: linear-gradient(90deg, #12193b, #0d112b); padding: 6px 10px; border-bottom: 1px solid #1b244d; font-size: 11px; font-weight: bold; letter-spacing: 1px; color: #8ba2ff; display: flex; justify-content: space-between; }
-    #currency-board { padding: 12px; display: flex; flex-direction: column; gap: 6px; }
-    .curr-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); padding: 6px 10px; border-radius: 3px; border: 1px solid rgba(255,255,255,0.03); }
-    .curr-lbl { font-size: 11px; color: #a0acdb; }
-    .curr-val { font-size: 18px; font-weight: bold; font-family: monospace; }
-    .c-gold { color: #ffd700; text-shadow: 0 0 8px rgba(255,215,0,0.4); }
-    .c-shard { color: #00f0ff; text-shadow: 0 0 8px rgba(0,240,255,0.4); }
-    .c-essence { color: #cc66ff; text-shadow: 0 0 8px rgba(204,102,255,0.4); }
-    #stage-board { padding: 4px 10px; font-size: 10px; color: #5869a4; text-align: right; }
-    #canvas-container { flex: 1; position: relative; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle at 50% 50%, #0e1435 0%, #050716 100%); cursor: pointer; border-radius: 0 0 4px 4px; overflow: hidden; }
-    #canvas-container:active #viewCanvas { transform: scale(0.98); }
+    .panel-header { background: #ffe3e8; padding: 6px 12px; border-bottom: 2px solid #ffd0d8; font-size: 12px; font-weight: bold; color: #ff5e7e; display: flex; justify-content: space-between; border-radius: 6px 6px 0 0; }
+    #currency-board { padding: 10px; display: flex; flex-direction: column; gap: 6px; background: #fff; border-bottom: 1px solid #ffe3e8; }
+    .curr-row { display: flex; justify-content: space-between; align-items: center; background: #fff9fa; padding: 6px 10px; border-radius: 6px; border: 1px solid #ffe3e8; }
+    .curr-lbl { font-size: 12px; font-weight: bold; color: #8a6d75; }
+    .curr-val { font-size: 16px; font-weight: bold; font-family: Arial; color: #ff5e7e; }
+    #canvas-container { flex: 1; position: relative; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle at 50% 50%, #fff0f3 0%, #ffe3e8 100%); cursor: pointer; border-radius: 0 0 6px 6px; overflow: hidden; }
     #viewCanvas { transition: transform 0.05s; }
     #dmg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-    .pop-text { position: absolute; font-weight: bold; font-family: monospace; pointer-events: none; font-size: 14px; animation: pMove 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-    @keyframes pMove { 0% { transform: translateY(0) scale(0.8); opacity: 1; } 50% { opacity: 1; } 100% { transform: translateY(-70px) scale(1.1); opacity: 0; } }
-    .scroller { flex: 1; overflow-y: scroll; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
-    .scroller::-webkit-scrollbar { width: 4px; }
+    .pop-text { position: absolute; font-weight: bold; pointer-events: none; font-size: 15px; animation: pMove 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    @keyframes pMove { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 20% { opacity: 1; transform: translateY(-10px) scale(1.2); } 100% { transform: translateY(-60px) scale(1); opacity: 0; } }
+    .scroller { flex: 1; overflow-y: scroll; padding: 8px; display: flex; flex-direction: column; gap: 8px; background: #fffcfd; }
+    .scroller::-webkit-scrollbar { width: 6px; }
     .scroller::-webkit-scrollbar-track { background: transparent; }
-    .scroller::-webkit-scrollbar-thumb { background: #1b244d; border-radius: 2px; }
-    .scroller::-webkit-scrollbar-thumb:hover { background: #2c3a6b; }
-    .card { background: rgba(22, 28, 61, 0.6); border: 1px solid #1d2754; border-radius: 4px; padding: 6px 8px; display: flex; justify-content: space-between; align-items: center; position: relative; transition: border 0.2s; }
-    .card:hover { border-color: #36478a; }
-    .card-meta { display: flex; flex-direction: column; gap: 2px; width: 145px; }
-    .card-title { font-size: 11px; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .card-desc { font-size: 10px; color: #717fa8; }
-    .card-cost { font-size: 10px; font-family: monospace; font-weight: bold; }
-    .btn-action { background: linear-gradient(180deg, #1e295d 0%, #11183c 100%); border: 1px solid #31438c; border-radius: 3px; color: #b4c2f0; padding: 6px 10px; min-width: 65px; text-align: center; cursor: pointer; font-size: 10px; font-weight: bold; transition: all 0.1s; }
-    .btn-action:hover:not(:disabled) { background: linear-gradient(180deg, #2b3b84 0%, #182254 100%); border-color: #4963cc; color: #fff; box-shadow: 0 0 8px rgba(73,99,204,0.4); }
-    .btn-action:active:not(:disabled) { transform: scale(0.96); }
-    .btn-action:disabled { background: #0c0f24; border-color: #141a3a; color: #404a6e; cursor: not-allowed; }
-    .hud-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; padding: 8px; }
-    .hud-box { background: rgba(16,22,48,0.5); border: 1px solid #161e42; padding: 6px; border-radius: 3px; display: flex; flex-direction: column; }
-    .hud-box-lbl { font-size: 9px; color: #526396; text-transform: uppercase; letter-spacing: 0.5px; }
-    .hud-box-val { font-size: 11px; color: #a3b4e7; font-weight: bold; margin-top: 2px; font-family: monospace; }
-    .bar-container { height: 4px; background: #090d22; border-radius: 2px; margin-top: 4px; overflow: hidden; position: relative; }
-    .bar-fill { height: 100%; width: 0%; transition: width 0.1s linear; }
-    .b-blue { background: #00beff; box-shadow: 0 0 5px #00beff; }
-    .b-purple { background: #ba43ff; box-shadow: 0 0 5px #ba43ff; }
-    #log-panel { height: 95px; background: #040610; border: 1px solid #131938; margin: 0 12px 12px 12px; border-radius: 4px; display: flex; flex-direction: column; }
-    #log-stream { flex: 1; overflow-y: hidden; padding: 6px 10px; font-family: monospace; font-size: 10px; color: #516294; display: flex; flex-direction: column; justify-content: flex-end; }
-    .log-line { margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .log-line .ts { color: #2e3b61; margin-right: 6px; }
-    .log-system { color: #6173a1; }
-    .log-loot { color: #dfb326; }
-    .log-craft { color: #be5eff; }
+    .scroller::-webkit-scrollbar-thumb { background: #ffd0d8; border-radius: 3px; }
+    .card { background: #ffffff; border: 2px solid #ffe3e8; border-radius: 8px; padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
+    .card:hover { border-color: #ffb7c5; background: #fff9fa; }
+    .card-meta { display: flex; flex-direction: column; gap: 2px; width: 260px; }
+    .card-title { font-size: 12px; font-weight: bold; color: #735961; }
+    .card-desc { font-size: 11px; color: #a68a93; }
+    .card-cost { font-size: 11px; font-weight: bold; color: #ff758f; margin-top: 2px; }
+    .btn-action { background: linear-gradient(to bottom, #ff9ebb 0%, #ff758f 100%); border: none; border-radius: 20px; color: white; padding: 6px 14px; min-width: 80px; text-align: center; cursor: pointer; font-size: 11px; font-weight: bold; box-shadow: 0 2px 5px rgba(255,117,143,0.3); transition: all 0.1s; }
+    .btn-action:hover:not(:disabled) { background: linear-gradient(to bottom, #ffb3c6 0%, #ff5e7e 100%); box-shadow: 0 4px 8px rgba(255,94,126,0.4); }
+    .btn-action:active:not(:disabled) { transform: scale(0.95); }
+    .btn-action:disabled { background: #e2d9db; color: #a69fa1; box-shadow: none; cursor: not-allowed; }
+    .hud-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; padding: 8px; background: #fff; border-top: 2px solid #ffe3e8; }
+    .hud-box { background: #fff9fa; border: 1px solid #ffe3e8; padding: 6px; border-radius: 6px; display: flex; flex-direction: column; }
+    .hud-box-lbl { font-size: 10px; color: #a68a93; font-weight: bold; }
+    .hud-box-val { font-size: 11px; color: #ff5e7e; font-weight: bold; margin-top: 2px; }
+    .bar-container { height: 6px; background: #eee0e2; border-radius: 3px; margin-top: 4px; overflow: hidden; position: relative; }
+    .bar-fill { height: 100%; width: 0%; background: #ff758f; box-shadow: 0 0 4px #ff758f; }
+    #log-panel { height: 75px; background: #fff; border: 2px solid #ffe3e8; margin: 0 12px 12px 12px; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
+    #log-stream { flex: 1; padding: 6px 12px; font-size: 11px; color: #8a7379; display: flex; flex-direction: column; justify-content: flex-end; }
+    .log-line { margin-top: 2px; }
+    .log-system { color: #b58da3; }
+    .log-loot { color: #ff8b3d; font-weight: bold; }
+    .log-craft { color: #d65672; font-weight: bold; }
 </STYLE>
 </HEAD>
 <BODY>
 
 <DIV ID="win-chrome">
     <DIV ID="title-bar">
-        <DIV CLASS="title-text">REALM OF ALCHEMIST v2.5.1</DIV>
+        <DIV CLASS="title-text">✨ 我的夢幻萌寵桌寵系統 ✨</DIV>
         <BUTTON CLASS="win-btn" ONCLICK="window.close()">✕</BUTTON>
     </DIV>
 
     <DIV ID="main-layout">
         <DIV ID="left-zone">
             <DIV CLASS="panel" STYLE="flex: 1;">
-                <DIV CLASS="panel-header"><SPAN>MATRIX RENDERER</SPAN><SPAN ID="stage-board">STAGE 1</SPAN></DIV>
+                <DIV CLASS="panel-header"><SPAN ID="pet-state-lbl">飽食萌寵</SPAN><SPAN ID="stage-board">生長期: 幼體</SPAN></DIV>
                 <DIV ID="canvas-container" ONCLICK="execManualClick(event)">
-                    <CANVAS ID="viewCanvas" WIDTH="318" HEIGHT="330"></CANVAS>
+                    <CANVAS ID="viewCanvas" WIDTH="296" HEIGHT="250"></CANVAS>
                     <DIV ID="dmg-layer"></DIV>
                 </DIV>
-                <DIV CLASS="hud-grid" STYLE="background: #090d22; border-top: 1px solid #1b244d;">
+                <DIV CLASS="hud-grid">
                     <DIV CLASS="hud-box">
-                        <DIV CLASS="hud-box-lbl">Auto Extraction</DIV>
-                        <DIV CLASS="hud-box-val" ID="hud-aps">0.00s</DIV>
-                        <DIV CLASS="bar-container"><DIV ID="bar-auto" CLASS="bar-fill b-blue"></DIV></DIV>
+                        <DIV CLASS="hud-box-lbl">寵物飽食度 (自動產金)</DIV>
+                        <DIV CLASS="hud-box-val" ID="hud-aps">100%</DIV>
+                        <DIV CLASS="bar-container"><DIV ID="bar-satiety" CLASS="bar-fill" STYLE="background:#ff9ebb;"></DIV></DIV>
                     </DIV>
                     <DIV CLASS="hud-box">
-                        <DIV CLASS="hud-box-lbl">Transmutation</DIV>
-                        <DIV CLASS="hud-box-val" ID="hud-tps">0.00s</DIV>
-                        <DIV CLASS="bar-container"><DIV ID="bar-trans" CLASS="bar-fill b-purple"></DIV></DIV>
+                        <DIV CLASS="hud-box-lbl">心情凝聚度 (產星週期)</DIV>
+                        <DIV CLASS="hud-box-val" ID="hud-tps">0.0s</DIV>
+                        <DIV CLASS="bar-container"><DIV ID="bar-mood" CLASS="bar-fill" STYLE="background:#70e1ff;"></DIV></DIV>
                     </DIV>
                 </DIV>
             </DIV>
             <DIV CLASS="panel" STYLE="height: 110px;">
-                <DIV CLASS="panel-header">RESOURCES REGISTRY</DIV>
+                <DIV CLASS="panel-header">小錢包與收藏庫</DIV>
                 <DIV ID="currency-board">
                     <DIV CLASS="curr-row">
-                        <SPAN CLASS="curr-lbl">Mithril Gold</SPAN>
-                        <SPAN CLASS="curr-val c-gold" ID="v-gold">0</SPAN>
+                        <SPAN CLASS="curr-lbl">💰 萌寵金幣</SPAN>
+                        <SPAN CLASS="curr-val" ID="v-gold" STYLE="color:#e5a93b;">0</SPAN>
                     </DIV>
                     <DIV CLASS="curr-row" STYLE="margin-top: 2px;">
-                        <SPAN CLASS="curr-lbl">Aether Shards</SPAN>
-                        <SPAN CLASS="curr-val c-shard" ID="v-shards">0</SPAN>
+                        <SPAN CLASS="curr-lbl">⭐ 幸運幻星</SPAN>
+                        <SPAN CLASS="curr-val" ID="v-shards" STYLE="color:#5cbce6;">0</SPAN>
                     </DIV>
                 </DIV>
-            </DIV>
-        </DIV>
-
-        <DIV ID="center-zone">
-            <DIV CLASS="panel" STYLE="flex: 1;">
-                <DIV CLASS="panel-header">ARMAMENT FORGE</DIV>
-                <DIV CLASS="scroller" ID="scroller-gear"></DIV>
             </DIV>
         </DIV>
 
         <DIV ID="right-zone">
             <DIV CLASS="panel" STYLE="flex: 1;">
-                <DIV CLASS="panel-header">ALCHEMY REFACTORING</DIV>
-                <DIV CLASS="scroller" ID="scroller-alchemy"></DIV>
+                <DIV CLASS="panel-header">育兒商城：購買與升級萌寵裝備</DIV>
+                <DIV CLASS="scroller" ID="scroller-gear"></DIV>
             </DIV>
         </DIV>
     </DIV>
@@ -142,39 +125,33 @@
 </DIV>
 
 <SCRIPT>
-    window.resizeTo(850, 550);
-    window.moveTo((window.screen.availWidth - 850) / 2, (window.screen.availHeight - 550) / 2);
+    window.resizeTo(780, 500);
+    window.moveTo((window.screen.availWidth - 780) / 2, (window.screen.availHeight - 500) / 2);
 
     var db = {
         gold: 0,
         shards: 0,
         totalGears: 0,
-        totalAlch: 0,
-        autoProgress: 0,
-        transProgress: 0,
+        satiety: 100,
+        moodProgress: 0,
         lastTick: new Date().getTime(),
         gear: {
-            g1: { id: "g1", name: "Aetherial Blade", lvl: 0, baseCost: 15, costMult: 1.45, type: "gold_add", val: 2, desc: "+2 Gold / Cycle", costType: "gold" },
-            g2: { id: "g2", name: "Spire Crest Shield", lvl: 0, baseCost: 80, costMult: 1.55, type: "interval_sub", val: 80, desc: "-80ms Extraction Res", costType: "gold" },
-            g3: { id: "g3", name: "Chronos Reliquary", lvl: 0, baseCost: 400, costMult: 1.65, type: "shard_add", val: 1, desc: "+1 Shard / Cycle", costType: "gold" },
-            g4: { id: "g4", name: "Void Mantle", lvl: 0, baseCost: 2000, costMult: 1.80, type: "multiplier", val: 0.3, desc: "+30% Global Output", costType: "gold" },
-            g5: { id: "g5", name: "Astral Diadem", lvl: 0, baseCost: 12000, costMult: 2.10, type: "click_amp", val: 4, desc: "+400% Click Matrix", costType: "gold" }
-        },
-        alch: {
-            a1: { id: "a1", name: "Aurum Liquefaction", lvl: 0, baseCost: 10, costMult: 1.8, type: "trans_gold", val: 15, desc: "Transmute: Shard to 15 Gold", costType: "shards" },
-            a2: { id: "a2", name: "Aether Synthesis", lvl: 0, baseCost: 25, costMult: 1.9, type: "trans_speed", val: 200, desc: "-200ms Transmute Res", costType: "shards" },
-            a3: { id: "a3", name: "Quantum Catalyst", lvl: 0, baseCost: 80, costMult: 2.2, type: "crit_chance", val: 0.05, desc: "+5% Transmute Double Trigger", costType: "shards" }
+            g1: { id: "g1", name: "🍼 高級美味牛奶", lvl: 0, baseCost: 10, costMult: 1.4, val: 2, desc: "餵食讓萌寵更有活力！+2 金幣/每次結算", costType: "gold" },
+            g2: { id: "g2", name: "🐱 軟綿綿貓耳髮箍", lvl: 0, baseCost: 50, costMult: 1.5, val: 120, desc: "變得更可愛！縮短 120毫秒 產金時間間隔", costType: "gold" },
+            g3: { id: "g3", name: "🕊️ 守護天使小翅膀", lvl: 0, baseCost: 250, costMult: 1.6, val: 1, desc: "萌寵學會飛翔！每次結算有機會獲得 1 顆幻星", costType: "gold" },
+            g4: { id: "g4", name: "👑 璀璨黃金小王冠", lvl: 0, baseCost: 1000, costMult: 1.8, val: 0.4, desc: "領主氣質！全圖收益永久提升 40%", costType: "gold" },
+            g5: { id: "g5", name: "🔮 奇幻環繞魔法球", lvl: 0, baseCost: 5, costMult: 2.0, val: 3, desc: "魔法環繞！點擊撫摸萌寵的收益暴增 300%", costType: "shards" }
         }
     };
 
     var cfg = {
         baseAutoInt: 2500,
-        baseTransInt: 4000,
-        canvasW: 318,
-        canvasH: 330
+        baseMoodInt: 5000,
+        canvasW: 296,
+        canvasH: 250
     };
 
-    var cvs, ctx, animFrame = 0;
+    var cvs, ctx, animFrame = 0, petAction = "idle", actionTimer = 0;
 
     function boot() {
         cvs = document.getElementById("viewCanvas");
@@ -182,37 +159,25 @@
         buildUI();
         tick();
         setInterval(tick, 40);
-        pushLog("Core system matrix initialized.", "system");
+        pushLog("歡迎來到萌寵世界！快點擊萌寵撫摸牠吧！", "system");
     }
 
     function buildUI() {
         var html = "";
         for (var k in db.gear) {
             var item = db.gear[k];
+            var cClass = item.costType == "gold" ? "c-gold" : "c-shard";
+            var cSign = item.costType == "gold" ? " 金幣" : " 幻星";
             html += '<DIV CLASS="card" ID="c-gear-' + item.id + '">' +
                     '<DIV CLASS="card-meta">' +
                     '<SPAN CLASS="card-title" ID="lbl-name-' + item.id + '">' + item.name + '</SPAN>' +
                     '<SPAN CLASS="card-desc">' + item.desc + '</SPAN>' +
-                    '<SPAN CLASS="card-cost c-gold" ID="lbl-cost-' + item.id + '">Cost: --</SPAN>' +
+                    '<SPAN CLASS="card-cost" ID="lbl-cost-' + item.id + '">花費: --</SPAN>' +
                     '</DIV>' +
-                    '<BUTTON CLASS="btn-action" ID="btn-gear-' + item.id + '" ONCLICK="buyGear(\'' + item.id + '\')">Upgrade</BUTTON>' +
+                    '<BUTTON CLASS="btn-action" ID="btn-gear-' + item.id + '" ONCLICK="buyGear(\'' + item.id + '\')">升級</BUTTON>' +
                     '</DIV>';
         }
         document.getElementById("scroller-gear").innerHTML = html;
-
-        html = "";
-        for (var k in db.alch) {
-            var item = db.alch[k];
-            html += '<DIV CLASS="card" ID="c-alch-' + item.id + '">' +
-                    '<DIV CLASS="card-meta">' +
-                    '<SPAN CLASS="card-title" ID="lbl-name-' + item.id + '">' + item.name + '</SPAN>' +
-                    '<SPAN CLASS="card-desc">' + item.desc + '</SPAN>' +
-                    '<SPAN CLASS="card-cost c-shard" ID="lbl-cost-' + item.id + '">Cost: --</SPAN>' +
-                    '</DIV>' +
-                    '<BUTTON CLASS="btn-action" ID="btn-alch-' + item.id + '" ONCLICK="buyAlch(\'' + item.id + '\')">Refactor</BUTTON>' +
-                    '</DIV>';
-        }
-        document.getElementById("scroller-alchemy").innerHTML = html;
         syncData();
     }
 
@@ -221,68 +186,59 @@
     }
 
     function syncData() {
-        document.getElementById("v-gold").innerText = formatNum(db.gold);
-        document.getElementById("v-shards").innerText = formatNum(db.shards);
+        document.getElementById("v-gold").innerText = db.gold;
+        document.getElementById("v-shards").innerText = db.shards;
 
         db.totalGears = 0;
         for (var k in db.gear) {
             var item = db.gear[k];
             var cost = getCost(item);
             db.totalGears += item.lvl;
-            document.getElementById("lbl-name-" + item.id).innerText = item.name + " [" + item.lvl + "]";
-            document.getElementById("lbl-cost-" + item.id).innerText = "Cost: " + formatNum(cost) + " G";
-            document.getElementById("btn-gear-" + item.id).disabled = (db.gold < cost);
+            document.getElementById("lbl-name-" + item.id).innerText = item.name + " [Lv." + item.lvl + "]";
+            
+            var cSign = item.costType == "gold" ? " 金幣" : " 幻星";
+            document.getElementById("lbl-cost-" + item.id).innerText = "需要: " + cost + cSign;
+            
+            if (item.costType == "gold") {
+                document.getElementById("btn-gear-" + item.id).disabled = (db.gold < cost);
+            } else {
+                document.getElementById("btn-gear-" + item.id).disabled = (db.shards < cost);
+            }
         }
 
-        db.totalAlch = 0;
-        for (var k in db.alch) {
-            var item = db.alch[k];
-            var cost = getCost(item);
-            db.totalAlch += item.lvl;
-            document.getElementById("lbl-name-" + item.id).innerText = item.name + " [" + item.lvl + "]";
-            document.getElementById("lbl-cost-" + item.id).innerText = "Cost: " + formatNum(cost) + " S";
-            document.getElementById("btn-alch-" + item.id).disabled = (db.shards < cost);
-        }
+        var stageStr = "幼體史萊姆";
+        if (db.totalGears >= 4) stageStr = "成長期：貓耳小怪獸";
+        if (db.totalGears >= 10) stageStr = "成熟期：天界大精靈";
+        if (db.totalGears >= 18) stageStr = "究極體：神聖幻獸皇";
+        document.getElementById("stage-board").innerText = "型態: " + stageStr;
 
-        var stage = Math.floor(db.totalGears / 3) + 1;
-        document.getElementById("stage-board").innerText = "MATRIX BREAKTHROUGH: TIER " + stage;
-
-        document.getElementById("hud-aps").innerText = (getAutoInterval() / 1000).toFixed(2) + "s";
-        document.getElementById("hud-tps").innerText = (getTransInterval() / 1000).toFixed(2) + "s";
-    }
-
-    function formatNum(num) {
-        if (num >= 1e6) return (num / 1e6).toFixed(2) + "M";
-        if (num >= 1e3) return (num / 1e3).toFixed(1) + "K";
-        return num.toString();
+        document.getElementById("hud-aps").innerText = db.satiety + "%";
+        document.getElementById("hud-tps").innerText = (getMoodInterval() / 1000).toFixed(1) + "秒";
     }
 
     function getAutoInterval() {
-        return Math.max(500, cfg.baseAutoInt - (db.gear.g2.lvl * db.gear.g2.val));
+        return Math.max(600, cfg.baseAutoInt - (db.gear.g2.lvl * db.gear.g2.val));
     }
 
-    function getTransInterval() {
-        return Math.max(800, cfg.baseTransInt - (db.alch.a2.lvl * db.alch.a2.val));
+    function getMoodInterval() {
+        return cfg.baseMoodInt;
     }
 
     function buyGear(id) {
         var item = db.gear[id];
         var cost = getCost(item);
-        if (db.gold >= cost) {
+        if (item.costType == "gold" && db.gold >= cost) {
             db.gold -= cost;
             item.lvl++;
-            pushLog("Forged upgrade: " + item.name + " reached Rank " + item.lvl, "craft");
+            petAction = "happy"; actionTimer = 20;
+            pushLog("成功購買/升級了裝備！萌寵變得更漂亮了！", "craft");
+            if(id == "g1") db.satiety = Math.min(100, db.satiety + 20);
             syncData();
-        }
-    }
-
-    function buyAlch(id) {
-        var item = db.alch[id];
-        var cost = getCost(item);
-        if (db.shards >= cost) {
+        } else if (item.costType == "shards" && db.shards >= cost) {
             db.shards -= cost;
             item.lvl++;
-            pushLog("Alchemical Breakthrough: " + item.name + " reached Rank " + item.lvl, "craft");
+            petAction = "happy"; actionTimer = 20;
+            pushLog("啟動了核心魔法！萌寵散發出光芒！", "craft");
             syncData();
         }
     }
@@ -303,52 +259,46 @@
         db.lastTick = now;
 
         animFrame++;
+        if (actionTimer > 0) {
+            actionTimer--;
+            if (actionTimer <= 0) petAction = "idle";
+        }
 
         var autoInt = getAutoInterval();
-        db.autoProgress += delta;
-        if (db.autoProgress >= autoInt) {
-            db.autoProgress = 0;
-            triggerAutoCycle();
+        if (db.satiety > 0) {
+            var out = getOutputValues();
+            db.gold += out.gold;
+            db.shards += out.shards;
+            if (out.gold > 0 && animFrame % Math.floor(autoInt/40) === 0) {
+                popText(cfg.canvasW / 2, 70, "+" + out.gold + "💰", "#e5a93b");
+                if (Math.random() < 0.1) db.satiety = Math.max(0, db.satiety - 1);
+            }
+            if (out.shards > 0 && animFrame % Math.floor(autoInt/40) === 0) {
+                popText(cfg.canvasW / 2 + 30, 90, "+" + out.shards + "⭐", "#5cbce6");
+            }
         }
-        document.getElementById("bar-auto").style.width = Math.min(100, (db.autoProgress / autoInt) * 100) + "%";
 
-        var transInt = getTransInterval();
-        db.transProgress += delta;
-        if (db.transProgress >= transInt) {
-            db.transProgress = 0;
-            triggerTransCycle();
+        var moodInt = getMoodInterval();
+        db.moodProgress += delta;
+        if (db.moodProgress >= moodInt) {
+            db.moodProgress = 0;
+            if(db.satiety > 20) {
+                db.shards += 1;
+                popText(cfg.canvasW / 2 - 40, 100, "凝聚 +1⭐", "#5cbce6");
+                pushLog("萌寵心情很好，自動凝聚出了一顆幸運幻星！", "loot");
+            }
         }
-        document.getElementById("bar-trans").style.width = Math.min(100, (db.transProgress / transInt) * 100) + "%";
+        document.getElementById("bar-mood").style.width = Math.min(100, (db.moodProgress / moodInt) * 100) + "%";
+        document.getElementById("bar-satiety").style.width = db.satiety + "%";
 
-        render();
-    }
+        if (db.satiety <= 0) {
+            document.getElementById("pet-state-lbl").innerText = "飢餓中 (停止生產)";
+        } else {
+            document.getElementById("pet-state-lbl").innerText = "萌寵正在努力幫你賺錢";
+        }
 
-    function triggerAutoCycle() {
-        var out = getOutputValues();
-        db.gold += out.gold;
-        db.shards += out.shards;
-        if (out.gold > 0) popText(cfg.canvasW / 2, 80, "+" + out.gold + " Gold", "#ffd700");
-        if (out.shards > 0) popText(cfg.canvasW / 2, 100, "+" + out.shards + " Shard", "#00f0ff");
         syncData();
-    }
-
-    function triggerTransCycle() {
-        if (db.shards >= 1 && db.alch.a1.lvl > 0) {
-            var count = 1;
-            var critChance = db.alch.a3.lvl * db.alch.a3.val;
-            if (Math.random() < critChance) {
-                count = 2;
-            }
-            var costShards = 1 * count;
-            if(db.shards >= costShards) {
-                db.shards -= costShards;
-                var reward = db.alch.a1.lvl * db.alch.a1.val * count;
-                db.gold += reward;
-                pushLog("Transmuted " + costShards + " Shard into " + reward + " Gold" + (count > 1 ? " [CRITICAL]" : ""), "loot");
-                popText(cfg.canvasW / 2 + 40, 140, "Transmute +" + reward, "#cc66ff");
-                syncData();
-            }
-        }
+        render();
     }
 
     function execManualClick(e) {
@@ -358,14 +308,15 @@
 
         var out = getOutputValues();
         var clickAmp = 1 + (db.gear.g5.lvl * db.gear.g5.val);
-        var baseClick = Math.floor(out.gold * clickAmp);
+        var clickGold = Math.floor(out.gold * clickAmp);
         
-        db.gold += baseClick;
-        popText(x, y, "+" + baseClick, "#fffb00");
+        db.gold += clickGold;
+        popText(x, y, "撫摸 +" + clickGold + "💰", "#ff5e7e");
+        
+        petAction = "happy";
+        actionTimer = 25;
 
-        db.autoProgress += Math.floor(getAutoInterval() * 0.15);
-        db.transProgress += Math.floor(getTransInterval() * 0.1);
-
+        db.moodProgress += Math.floor(getMoodInterval() * 0.1);
         syncData();
     }
 
@@ -376,7 +327,7 @@
         el.style.left = (x - 40) + "px";
         el.style.top = (y - 15) + "px";
         el.style.color = color;
-        el.style.textShadow = "0 0 4px " + color;
+        el.style.textShadow = "1px 1px 0px #fff, -1px -1px 0px #fff, 1px -1px 0px #fff, -1px 1px 0px #fff";
         el.innerText = txt;
         container.appendChild(el);
         setTimeout(function() { if(el && el.parentNode) container.removeChild(el); }, 800);
@@ -384,48 +335,21 @@
 
     function pushLog(txt, type) {
         var s = document.getElementById("log-stream");
-        var d = new Date();
-        var ts = "[" + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2) + ":" + ("0" + d.getSeconds()).slice(-2) + "]";
         var line = document.createElement("div");
         line.className = "log-line log-" + type;
-        line.innerHTML = '<span class="ts">' + ts + '</span>' + txt;
+        line.innerHTML = "• " + txt;
         s.appendChild(line);
-        if (s.childNodes.length > 5) s.removeChild(s.firstChild);
+        if (s.childNodes.length > 3) s.removeChild(s.firstChild);
     }
 
-    function drawRing(cx, cy, r, lw, color, dash, rot) {
+    function drawEllipse(ctx, cx, cy, rx, ry, color) {
         ctx.save();
-        ctx.translate(cx, cy);
-        ctx.rotate(rot);
         ctx.beginPath();
-        ctx.arc(0, 0, r, 0, Math.PI * 2);
-        ctx.lineWidth = lw;
-        ctx.strokeStyle = color;
-        if(dash) ctx.setLineDash(dash);
-        ctx.stroke();
-        ctx.restore();
-    }
-
-    function drawPolygon(cx, cy, r, sides, color, rot, fill) {
-        ctx.save();
         ctx.translate(cx, cy);
-        ctx.rotate(rot);
-        ctx.beginPath();
-        for(var i=0; i<sides; i++) {
-            var angle = (i * 2 * Math.PI / sides);
-            var x = r * Math.cos(angle);
-            var y = r * Math.sin(angle);
-            if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-        }
-        ctx.closePath();
-        if(fill) {
-            ctx.fillStyle = color;
-            ctx.fill();
-        } else {
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = color;
-            ctx.stroke();
-        }
+        ctx.scale(rx, ry);
+        ctx.arc(0, 0, 1, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
         ctx.restore();
     }
 
@@ -433,199 +357,146 @@
         ctx.clearRect(0, 0, cfg.canvasW, cfg.canvasH);
 
         var cx = cfg.canvasW / 2;
-        var cy = cfg.canvasH / 2 + 10;
-        var t = animFrame * 0.015;
-
-        var gLvl = db.gear.g1.lvl;
-        var sLvl = db.gear.g2.lvl;
-        var cLvl = db.gear.g3.lvl;
-        var vLvl = db.gear.g4.lvl;
-        var dLvl = db.gear.g5.lvl;
-
-        ctx.save();
-        ctx.translate(cx, cy);
-        ctx.scale(1, 0.45);
-        drawRing(0, 0, 75, 1, "rgba(50,75,180,0.15)", null, 0);
-        drawRing(0, 0, 85 + sLvl*3, 1.5, "rgba(0,240,255,0.2)", [10, 15], -t * 0.5);
-        if(sLvl >= 3) {
-            drawRing(0, 0, 100, 2, "rgba(186,67,255,0.25)", [5, 5], t);
-        }
-        ctx.restore();
-
-        if (vLvl > 0) {
-            ctx.save();
-            var pulse = Math.sin(animFrame * 0.05) * 5;
-            var auraRad = 50 + vLvl * 6 + pulse;
-            var gradient = ctx.createRadialGradient(cx, cy, 10, cx, cy, auraRad);
-            if (vLvl >= 4) {
-                gradient.addColorStop(0, "rgba(186, 67, 255, 0.3)");
-                gradient.addColorStop(0.6, "rgba(0, 240, 255, 0.1)");
-            } else {
-                gradient.addColorStop(0, "rgba(45, 65, 160, 0.3)");
-                gradient.addColorStop(0.7, "rgba(10, 15, 45, 0)");
-            }
-            gradient.addColorStop(1, "rgba(0,0,0,0)");
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(cx, cy, auraRad, 0, Math.PI*2);
-            ctx.fill();
-            ctx.restore();
-        }
-
-        if (cLvl > 0) {
-            var orbits = 2 + Math.min(4, cLvl);
-            for (var i = 0; i < orbits; i++) {
-                var orbAngle = t * 1.5 + (i * Math.PI * 2 / orbits);
-                var rx = Math.cos(orbAngle) * (65 + cLvl*2);
-                var ry = Math.sin(orbAngle) * (30 + cLvl);
-                ctx.beginPath();
-                ctx.arc(cx + rx, cy + ry, 3 + Math.min(3, cLvl), 0, Math.PI*2);
-                ctx.fillStyle = i % 2 === 0 ? "#00f0ff" : "#ba43ff";
-                ctx.shadowBlur = 8;
-                ctx.shadowColor = ctx.fillStyle;
-                ctx.fill();
-                ctx.shadowBlur = 0;
-            }
-        }
-
-        var hover = Math.sin(animFrame * 0.04) * 6;
-        var py = cy - 20 + hover;
-
-        if (vLvl >= 2) {
-            ctx.save();
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = vLvl >= 4 ? "rgba(186, 67, 255, 0.6)" : "rgba(0, 200, 255, 0.4)";
-            for(var w = 0; w < 2; w++) {
-                var d = w === 0 ? -1 : 1;
-                ctx.beginPath();
-                ctx.moveTo(cx + (10 * d), py + 10);
-                ctx.bezierCurveTo(cx + (40 * d) + (vLvl*5 * d), py - 30 - (vLvl*3), cx + (60 * d) + (vLvl*8 * d), py - 10, cx + (25 * d), py + 35);
-                ctx.stroke();
-            }
-            ctx.restore();
-        }
-
-        ctx.save();
-        var coreGradient = ctx.createRadialGradient(cx, py, 5, cx, py, 25);
-        var baseColor1 = "#1a2557", baseColor2 = "#0b102b";
-        if(vLvl > 0) { baseColor1 = "#2c1e59"; baseColor2 = "#0e0924"; }
-        if(vLvl >= 4) { baseColor1 = "#4d1254"; baseColor2 = "#140317"; }
-        coreGradient.addColorStop(0, baseColor1);
-        coreGradient.addColorStop(1, baseColor2);
+        var cy = cfg.canvasH / 2 + 20;
         
-        ctx.beginPath();
-        ctx.moveTo(cx, py - 30);
-        ctx.lineTo(cx + 22, py);
-        ctx.lineTo(cx, py + 35);
-        ctx.lineTo(cx - 22, py);
-        ctx.closePath();
-        ctx.fillStyle = coreGradient;
-        ctx.lineWidth = 1.5;
-        ctx.strokeStyle = vLvl >= 3 ? "#ba43ff" : "#2e419c";
-        ctx.fill();
-        ctx.stroke();
-        ctx.restore();
+        var breathe = Math.sin(animFrame * 0.08) * 2;
+        var floatY = Math.sin(animFrame * 0.04) * 4;
+        
+        var py = cy + floatY;
 
-        ctx.save();
-        var innerRot = -t * 0.8;
-        drawPolygon(cx, py, 10, 4, "rgba(0, 240, 255, 0.7)", innerRot, false);
-        drawPolygon(cx, py, 4, 4, "#ffffff", innerRot + Math.PI/4, true);
-        ctx.restore();
+        var g1Lvl = db.gear.g1.lvl;
+        var g2Lvl = db.gear.g2.lvl;
+        var g3Lvl = db.gear.g3.lvl;
+        var g4Lvl = db.gear.g4.lvl;
+        var g5Lvl = db.gear.g5.lvl;
 
-        if (gLvl > 0) {
+        drawEllipse(ctx, cx, cy + 35, 45 + breathe, 10, "rgba(255, 183, 197, 0.4)");
+
+        if (g3Lvl > 0) {
             ctx.save();
-            ctx.translate(cx - 32, py + 10);
-            ctx.rotate(-Math.PI / 4 + Math.sin(animFrame * 0.03) * 0.08);
-            
-            var swLen = 40 + (gLvl * 4);
-            var swW = 3 + Math.floor(gLvl/2);
-            
-            var bladeGlow = gLvl >= 4 ? "#ff3366" : "#ffd700";
-            ctx.shadowBlur = 6;
-            ctx.shadowColor = bladeGlow;
-
-            ctx.fillStyle = "#4a5568";
-            ctx.fillRect(-2, 0, 4, 10);
-            ctx.fillStyle = "#2d3748";
-            ctx.fillRect(-8, -2, 16, 3);
-
-            var bladeGrad = ctx.createLinearGradient(-swW, -swLen, swW, -swLen);
-            bladeGrad.addColorStop(0, bladeGlow);
-            bladeGrad.addColorStop(0.5, "#ffffff");
-            bladeGrad.addColorStop(1, bladeGlow);
-            ctx.fillStyle = bladeGrad;
+            var wingFlap = Math.sin(animFrame * 0.15) * 5;
+            ctx.fillStyle = "#ffffff";
+            ctx.strokeStyle = "#ffb7c5";
+            ctx.lineWidth = 2;
             
             ctx.beginPath();
-            ctx.moveTo(-swW, 0);
-            ctx.lineTo(-swW, -swLen + 8);
-            ctx.lineTo(0, -swLen);
-            ctx.lineTo(swW, -swLen + 8);
-            ctx.lineTo(swW, 0);
-            ctx.closePath();
-            ctx.fill();
+            ctx.moveTo(cx - 30, py);
+            ctx.bezierCurveTo(cx - 70, py - 30 + wingFlap, cx - 60, py + 10 + wingFlap, cx - 30, py + 15);
+            ctx.fill(); ctx.stroke();
             
+            ctx.beginPath();
+            ctx.moveTo(cx + 30, py);
+            ctx.bezierCurveTo(cx + 70, py - 30 + wingFlap, cx + 60, py + 10 + wingFlap, cx + 30, py + 15);
+            ctx.fill(); ctx.stroke();
             ctx.restore();
         }
 
-        if (sLvl > 0) {
-            ctx.save();
-            ctx.translate(cx + 32, py + 15);
-            ctx.rotate(Math.PI / 12 + Math.sin(animFrame * 0.03) * 0.04);
-            
-            var shW = 18 + (sLvl * 2);
-            var shH = 24 + (sLvl * 3);
-            
-            ctx.shadowBlur = 6;
-            ctx.shadowColor = "#00f0ff";
-            
-            var shGrad = ctx.createLinearGradient(-shW/2, 0, shW/2, 0);
-            shGrad.addColorStop(0, "#0b2840");
-            shGrad.addColorStop(0.5, "#00beff");
-            shGrad.addColorStop(1, "#0b2840");
-            ctx.fillStyle = shGrad;
-            
+        if (g2Lvl > 0) {
+            ctx.fillStyle = "#ff9ebb";
+            ctx.strokeStyle = "#fff";
+            ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(-shW/2, -shH/2);
-            ctx.lineTo(shW/2, -shH/2);
-            ctx.lineTo(shW/3, shH/2);
-            ctx.lineTo(0, shH/2 + 6);
-            ctx.lineTo(-shW/3, shH/2);
-            ctx.closePath();
-            ctx.fill();
-            ctx.lineWidth = 1.5;
-            ctx.strokeStyle = "#ffffff";
-            ctx.stroke();
-            
-            ctx.restore();
+            ctx.moveTo(cx - 32, py - 15);
+            ctx.lineTo(cx - 45, py - 42);
+            ctx.lineTo(cx - 18, py - 28);
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(cx + 32, py - 15);
+            ctx.lineTo(cx + 45, py - 42);
+            ctx.lineTo(cx + 18, py - 28);
+            ctx.closePath(); ctx.fill(); ctx.stroke();
         }
 
-        if (dLvl > 0) {
-            ctx.save();
-            ctx.translate(cx, py - 38);
-            var dy = Math.sin(animFrame * 0.05) * 2;
-            
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = "#ffd700";
-            
-            ctx.fillStyle = "#ffd700";
-            ctx.beginPath();
-            ctx.moveTo(-16, dy);
-            ctx.lineTo(-20, dy - 6 - dLvl);
-            ctx.lineTo(-8, dy - 3);
-            ctx.lineTo(0, dy - 12 - dLvl * 2);
-            ctx.lineTo(8, dy - 3);
-            ctx.lineTo(20, dy - 6 - dLvl);
-            ctx.lineTo(16, dy);
-            ctx.closePath();
-            ctx.fill();
+        var petColor = "#ffb3c6";
+        if(db.satiety <= 0) petColor = "#b8b0b2";
+        else if(petAction == "happy") petColor = "#ff758f";
 
-            if(dLvl >= 3) {
-                ctx.fillStyle = "#00f0ff";
-                ctx.beginPath();
-                ctx.arc(0, dy - 16 - dLvl * 2, 3, 0, Math.PI*2);
-                ctx.fill();
+        drawEllipse(ctx, cx, py + 5, 42 + breathe, 32 - breathe, petColor);
+        drawEllipse(ctx, cx - 38, py + 18, 10, 10, petColor);
+
+        var eyeW = 4;
+        var eyeH = 6;
+        var blink = (animFrame % 60 > 56);
+        
+        ctx.fillStyle = "#4a3338";
+        
+        if (db.satiety <= 0) {
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#4a3338";
+            ctx.beginPath(); ctx.moveTo(cx - 16, py - 2); ctx.lineTo(cx - 10, py + 2); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 10, py + 2); ctx.lineTo(cx + 16, py - 2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx, py + 14, 5, Math.PI, 0); ctx.stroke();
+        } else if (petAction == "happy") {
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#4a3338";
+            ctx.beginPath(); ctx.arc(cx - 14, py, 4, Math.PI, 0); ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx + 14, py, 4, Math.PI, 0); ctx.stroke();
+            ctx.fillStyle = "#ff4f70";
+            ctx.beginPath();
+            ctx.arc(cx, py + 6, 6, 0, Math.PI);
+            ctx.fill();
+        } else {
+            if (!blink) {
+                drawEllipse(ctx, cx - 14, py, eyeW, eyeH, "#4a3338");
+                drawEllipse(ctx, cx + 14, py, eyeW, eyeH, "#4a3338");
+                drawEllipse(ctx, cx - 15, py - 2, 1.5, 2, "#fff");
+                drawEllipse(ctx, cx + 13, py - 2, 1.5, 2, "#fff");
+            } else {
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "#4a3338";
+                ctx.beginPath(); ctx.moveTo(cx - 18, py); ctx.lineTo(cx - 10, py); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(cx + 10, py); ctx.lineTo(cx + 18, py); ctx.stroke();
             }
+            drawEllipse(ctx, cx - 22, py + 6, 6, 3, "rgba(255, 94, 126, 0.5)");
+            drawEllipse(ctx, cx + 22, py + 6, 6, 3, "rgba(255, 94, 126, 0.5)");
+            
+            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = "#4a3338";
+            ctx.beginPath(); ctx.arc(cx - 3, py + 6, 3, 0, Math.PI); ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx + 3, py + 6, 3, 0, Math.PI); ctx.stroke();
+        }
+
+        if (g4Lvl > 0) {
+            ctx.save();
+            ctx.translate(cx, py - 30);
+            ctx.fillStyle = "#ffd23f";
+            ctx.strokeStyle = "#e5a93b";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(-12, 0);
+            ctx.lineTo(-15, -10);
+            ctx.lineTo(-6, -4);
+            ctx.lineTo(0, -16);
+            ctx.lineTo(6, -4);
+            ctx.lineTo(15, -10);
+            ctx.lineTo(12, 0);
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+            
+            ctx.fillStyle = "#ff4757";
+            ctx.beginPath(); ctx.arc(0, -18, 2.5, 0, Math.PI*2); ctx.fill();
             ctx.restore();
+        }
+
+        if (g5Lvl > 0) {
+            var orbCount = Math.min(5, g5Lvl);
+            for (var i = 0; i < orbCount; i++) {
+                var angle = (animFrame * 0.05) + (i * (Math.PI * 2) / orbCount);
+                var orbX = cx + Math.cos(angle) * 65;
+                var orbY = py + Math.sin(angle) * 20;
+                
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(orbX, orbY, 5, 0, Math.PI * 2);
+                var grad = ctx.createRadialGradient(orbX, orbY, 1, orbX, orbY, 5);
+                grad.addColorStop(0, "#fff");
+                grad.addColorStop(1, "#70e1ff");
+                ctx.fillStyle = grad;
+                ctx.shadowBlur = 6;
+                ctx.shadowColor = "#70e1ff";
+                ctx.fill();
+                ctx.restore();
+            }
         }
     }
 
