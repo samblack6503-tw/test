@@ -8,10 +8,12 @@
 豪華轉職：掛機冒險 Ultra Extreme v2.0
 </title>
 
+
 <hta:application
  id="idleGame"
- applicationname="IdleGame"
+ applicationname="IdleAdventureUltra"
  border="thin"
+ borderstyle="normal"
  caption="yes"
  maximizebutton="no"
  minimizebutton="yes"
@@ -29,135 +31,133 @@ window.moveTo(
 );
 
 
-/* =====================
-   遊戲資料核心
-===================== */
+
+/* ===========================
+   遊戲核心資料
+=========================== */
 
 
 var gameState={
 
-gold:0,
+    gold:0,
 
-baseGold:1,
+    baseGold:1,
 
-baseInterval:2000,
+    baseInterval:2000,
 
-clickPower:1,
-
-
-jobLevel:0,
+    clickPower:1,
 
 
-jobNames:[
-"見習冒險者",
-"皇家聖騎士",
-"元素大魔導",
-"影刃弒神者"
-],
+    jobLevel:0,
 
 
-jobColors:[
-"#a0a5c1",
-"#f1c40f",
-"#3498db",
-"#e74c3c"
-],
+    jobNames:[
+        "見習冒險者",
+        "皇家聖騎士",
+        "元素大魔導",
+        "影刃弒神者"
+    ],
 
 
-
-/*
-永久轉生力量
-每次轉職增加
-*/
-
-
-rebirthPower:0,
+    jobColors:[
+        "#a0a5c1",
+        "#f1c40f",
+        "#3498db",
+        "#e74c3c"
+    ],
 
 
-
-prestigeRequirement:1200,
-
-
-upgrades:{
+    rebirthPower:0,
 
 
-sword:{
-name:"光能巨劍",
-lvl:0,
-max:8,
-cost:10,
-baseCost:10,
-mult:1.6
-},
+    prestigeRequirement:1200,
 
 
-shield:{
-name:"脈衝重盾",
-lvl:0,
-max:8,
-cost:30,
-baseCost:30,
-mult:1.7
-},
+    upgrades:{
 
 
-armor:{
-name:"納米重鎧",
-lvl:0,
-max:8,
-cost:100,
-baseCost:100,
-mult:1.8
-},
+        sword:{
+            name:"光能巨劍",
+            lvl:0,
+            max:8,
+            cost:10,
+            baseCost:10,
+            mult:1.6
+        },
 
 
-crown:{
-name:"不朽王冠",
-lvl:0,
-max:8,
-cost:500,
-baseCost:500,
-mult:2
-}
+        shield:{
+            name:"脈衝重盾",
+            lvl:0,
+            max:8,
+            cost:30,
+            baseCost:30,
+            mult:1.7
+        },
 
 
-}
+        armor:{
+            name:"納米重鎧",
+            lvl:0,
+            max:8,
+            cost:100,
+            baseCost:100,
+            mult:1.8
+        },
+
+
+        crown:{
+            name:"不朽王冠",
+            lvl:0,
+            max:8,
+            cost:500,
+            baseCost:500,
+            mult:2
+        }
+
+    }
 
 };
 
 
 
-/* =====================
-   遠征
-===================== */
+
+/* ===========================
+   遠征資料
+=========================== */
+
 
 var advState={
 
-away:false,
+    away:false,
 
-time:0,
+    time:0,
 
-timer:null
+    timer:null
 
 };
 
 
 
-/* =====================
- Canvas
-===================== */
+
+/* ===========================
+   Canvas資料
+=========================== */
 
 
-var canvas;
-var ctx;
+var canvas=null;
+
+var ctx=null;
 
 
 
 var fxState={
 
-texts:[],
-waves:[],
-scale:1
+    texts:[],
+
+    waves:[],
+
+    scale:1
 
 };
 
@@ -165,355 +165,416 @@ scale:1
 
 var envState={
 
-cycle:0,
+    rain:false,
 
-rain:false,
+    drops:[],
 
-drops:[],
+    stars:[],
 
-stars:[],
-
-particles:[]
+    particles:[]
 
 };
 
 
 
-/* =====================
-   金幣防溢位
-===================== */
+
+/* ===========================
+   金幣增加
+=========================== */
 
 
 function addGold(value){
 
-var max=999999999999;
+    var maxGold=999999999999;
 
 
-gameState.gold=Math.min(
-max,
-gameState.gold+Math.floor(value)
-);
+    gameState.gold=Math.min(
+
+        maxGold,
+
+        gameState.gold+
+        Math.floor(value)
+
+    );
 
 }
 
 
 
 
-/* =====================
+/* ===========================
    存檔系統
-===================== */
+=========================== */
 
 
 function saveGame(){
 
-
-var data={
-
-state:gameState,
-
-time:Date.now()
-
-};
+    try{
 
 
-localStorage.idleSave=
-JSON.stringify(data);
+        var data={
+
+            state:gameState,
+
+            time:Date.now()
+
+        };
+
+
+        window.localStorage.setItem(
+
+            "IdleAdventureSave",
+
+            JSON.stringify(data)
+
+        );
+
+
+    }
+    catch(e){}
 
 
 }
+
 
 
 
 function loadGame(){
 
 
-var save=localStorage.idleSave;
+    try{
 
 
-if(!save)
-return;
+        var save=
 
-
-try{
-
-
-var data=JSON.parse(save);
-
-
-gameState=data.state;
+        window.localStorage.getItem(
+            "IdleAdventureSave"
+        );
 
 
 
-var offline=
-(Date.now()-data.time)/1000;
+        if(!save)
+            return;
 
 
 
-if(offline>5){
-
-
-var reward=
-Math.floor(
-getIdleIncome()
-*
-offline
-/
-(getCurrentInterval()/1000)
-);
+        var data=
+        JSON.parse(save);
 
 
 
-reward=Math.min(
-reward,
-999999999
-);
+        gameState=data.state;
 
 
 
-addGold(reward);
+        var offline=
+
+        (Date.now()-data.time)/1000;
 
 
 
-setTimeout(function(){
+        if(offline>5){
 
 
-alert(
-"💾 離線收益\n\n"+
-"離線時間："+
-Math.floor(offline)+
-" 秒\n\n"+
-"獲得金幣："+
-reward
-);
+            var reward=
+
+            Math.floor(
+
+                getIdleIncome()
+                *
+                offline
+                /
+                (getCurrentInterval()/1000)
+
+            );
 
 
 
-},300);
+            reward=Math.min(
+                reward,
+                999999999
+            );
 
+
+
+            addGold(reward);
+
+
+
+            setTimeout(function(){
+
+
+                alert(
+
+                "💾 離線收益\n\n"+
+                "離線時間："+
+                Math.floor(offline)+
+                " 秒\n\n"+
+                "獲得金幣："+
+                reward
+
+                );
+
+
+            },500);
+
+
+
+        }
+
+
+
+    }
+    catch(e){
+
+
+
+    }
 
 
 }
 
 
 
-}catch(e){
 
 
-console.log("存檔錯誤");
-
-}
-
-
-
-}
-
-
-
-/* =====================
-收益倍率
-===================== */
+/* ===========================
+   職業倍率
+=========================== */
 
 
 function getJobMultiplier(){
 
 
-return [
+    return [
 
-1,
+        1,
 
-2.5,
+        2.5,
 
-6,
+        6,
 
-15
+        15
 
+    ][gameState.jobLevel];
 
-][gameState.jobLevel];
 
 }
 
 
+
+
+
+/* ===========================
+   自動收益
+=========================== */
 
 
 function getIdleIncome(){
 
 
+    var base=
 
-var base=
-gameState.baseGold+
-gameState.upgrades.sword.lvl*2;
+    gameState.baseGold+
 
-
-
-var gear=
-1+
-gameState.upgrades.armor.lvl*0.5;
+    gameState.upgrades.sword.lvl*2;
 
 
 
-var total=
-base*
-gear;
+    var armor=
+
+    1+
+
+    gameState.upgrades.armor.lvl*0.5;
 
 
 
-total*=getJobMultiplier();
+    var total=
+
+    base*armor;
 
 
 
-total*=
-(
-1+
-gameState.rebirthPower*0.1
-);
+    total*=getJobMultiplier();
 
 
 
-return Math.floor(total);
+    total*=
+
+    (
+        1+
+        gameState.rebirthPower*0.1
+    );
+
+
+
+    return Math.floor(total);
 
 
 }
 
 
 
+
+
+
+/* ===========================
+   產金速度
+=========================== */
 
 
 function getCurrentInterval(){
 
 
+    var t=
 
-var t=
-gameState.baseInterval
--
-gameState.upgrades.shield.lvl*160;
+    gameState.baseInterval-
 
-
-
-if(gameState.jobLevel>=2)
-t*=0.7;
+    gameState.upgrades.shield.lvl*160;
 
 
 
-return Math.max(
-250,
-t
-);
+    if(gameState.jobLevel>=2)
+
+        t*=0.7;
 
 
 
-}
-
-
-
-
-/* =====================
-點擊收益
-===================== */
-
-
-function getClickIncome(){
-
-
-var value=
-gameState.clickPower+
-gameState.upgrades.sword.lvl*2;
-
-
-
-value*=
-1+
-gameState.upgrades.crown.lvl*1.5;
-
-
-
-value*=getJobMultiplier();
-
-
-
-value*=
-(
-1+
-gameState.rebirthPower*0.1
-);
-
-
-
-/*
-10%暴擊
-*/
-
-
-if(Math.random()<0.1){
-
-
-value*=10;
-
-
-showCrit=true;
-
-
-}else{
-
-
-showCrit=false;
+    return Math.max(
+        250,
+        t
+    );
 
 
 }
 
 
-return Math.floor(value);
 
 
-}
 
+/* ===========================
+   點擊收益
+=========================== */
 
 
 var showCrit=false;
 
 
 
+function getClickIncome(){
+
+
+    var value=
+
+    gameState.clickPower+
+
+    gameState.upgrades.sword.lvl*2;
+
+
+
+    value*=
+
+    (
+        1+
+        gameState.upgrades.crown.lvl*1.5
+    );
+
+
+
+    value*=getJobMultiplier();
+
+
+
+    value*=
+
+    (
+        1+
+        gameState.rebirthPower*0.1
+    );
+
+
+
+    if(Math.random()<0.1){
+
+
+        value*=10;
+
+        showCrit=true;
+
+
+    }
+    else{
+
+
+        showCrit=false;
+
+
+    }
+
+
+
+    return Math.floor(value);
+
+
+}
+
+
+
 </script>
+
 
 
 <style>
 
 
-*{
+html,body{
 
-box-sizing:border-box;
+    width:100%;
 
-font-family:
-"Microsoft JhengHei";
+    height:100%;
 
 }
+
+
+
+*{
+
+    box-sizing:border-box;
+
+    font-family:
+    "Microsoft JhengHei";
+
+}
+
 
 
 body{
 
-margin:0;
+    margin:0;
 
-padding:12px;
+    padding:12px;
 
-background:#080b12;
+    background:#080b12;
 
-color:white;
+    color:white;
 
-overflow:hidden;
+    overflow:hidden;
 
 }
 
 
+
 .header{
 
-background:#1f2833;
+    background:#1f2833;
 
-border:1px solid #45f3ff;
+    border:1px solid #45f3ff;
 
-border-radius:12px;
+    border-radius:12px;
 
-padding:12px;
+    padding:12px;
 
-text-align:center;
+    text-align:center;
 
 }
 
@@ -521,11 +582,11 @@ text-align:center;
 
 .gold{
 
-font-size:26px;
+    font-size:26px;
 
-color:#f1c40f;
+    color:#f1c40f;
 
-font-weight:bold;
+    font-weight:bold;
 
 }
 
@@ -533,15 +594,15 @@ font-weight:bold;
 
 .panel{
 
-background:#111827;
+    background:#111827;
 
-border-radius:10px;
+    border-radius:10px;
 
-padding:10px;
+    padding:10px;
 
-margin-top:8px;
+    margin-top:8px;
 
-border:1px solid #34495e;
+    border:1px solid #34495e;
 
 }
 
@@ -549,17 +610,19 @@ border:1px solid #34495e;
 
 button{
 
-background:#162447;
+    background:#162447;
 
-color:white;
+    color:white;
 
-border:1px solid #45f3ff;
+    border:
 
-padding:8px;
+    1px solid #45f3ff;
 
-border-radius:8px;
+    padding:8px;
 
-cursor:pointer;
+    border-radius:8px;
+
+    cursor:pointer;
 
 }
 
@@ -567,1411 +630,17 @@ cursor:pointer;
 
 button:disabled{
 
-opacity:.4;
+    opacity:.4;
 
 }
+
 
 
 
 </style>
 
+
 </head>
-<script>
-
-
-/* =========================
-   Idle Engine
-   固定心跳系統
-========================= */
-
-
-var lastTick=Date.now();
-
-
-
-function idleEngine(){
-
-
-var now=Date.now();
-
-
-var delta=
-now-lastTick;
-
-
-lastTick=now;
-
-
-
-var cycles=
-Math.floor(
-delta/getCurrentInterval()
-);
-
-
-
-if(cycles>0){
-
-
-addGold(
-getIdleIncome()*cycles
-);
-
-
-updateUI();
-
-
-}
-
-
-
-}
-
-
-
-setInterval(
-idleEngine,
-1000
-);
-
-
-
-
-/* =========================
-   自動保存
-========================= */
-
-
-setInterval(
-function(){
-
-saveGame();
-
-},
-10000
-);
-
-
-
-
-
-/* =========================
-   商店升級
-========================= */
-
-
-function buyUpgrade(type){
-
-
-var item=
-gameState.upgrades[type];
-
-
-if(
-gameState.gold>=item.cost &&
-item.lvl<item.max
-){
-
-
-gameState.gold-=item.cost;
-
-
-item.lvl++;
-
-
-item.cost=
-Math.floor(
-item.cost*item.mult
-);
-
-
-
-updateUI();
-
-
-}
-
-
-
-}
-
-
-
-
-/* =========================
-   轉職系統
-========================= */
-
-
-function triggerPrestige(){
-
-
-if(
-
-gameState.gold <
-gameState.prestigeRequirement
-
-)
-
-return;
-
-
-
-if(gameState.jobLevel>=3)
-return;
-
-
-
-
-gameState.gold-=
-
-gameState.prestigeRequirement;
-
-
-
-gameState.jobLevel++;
-
-
-/*
-永久力量
-*/
-
-gameState.rebirthPower++;
-
-
-
-
-/*
-保留30%裝備
-*/
-
-for(
-var key in gameState.upgrades
-){
-
-
-var u=
-gameState.upgrades[key];
-
-
-u.lvl=
-Math.floor(
-u.lvl*0.3
-);
-
-
-u.cost=
-u.baseCost;
-
-
-for(
-var i=0;
-i<u.lvl;
-i++
-){
-
-u.cost=
-Math.floor(
-u.cost*u.mult
-);
-
-}
-
-
-}
-
-
-
-
-gameState.prestigeRequirement*=6;
-
-
-
-alert(
-
-"✨ 覺醒成功！\n\n"+
-"晉升："+
-gameState.jobNames[
-gameState.jobLevel
-]+
-"\n\n"+
-"永久力量 +1\n"+
-"所有收益 +10%"
-
-);
-
-
-
-updateUI();
-
-
-}
-
-
-
-
-
-/* =========================
-   遠征系統
-========================= */
-
-
-function startAdventure(){
-
-
-if(
-gameState.jobLevel<1 ||
-advState.away
-)
-
-return;
-
-
-
-advState.away=true;
-
-advState.time=30;
-
-
-
-advState.timer=
-setInterval(
-function(){
-
-
-
-advState.time--;
-
-
-
-if(
-advState.time<=0
-){
-
-
-clearInterval(
-advState.timer
-);
-
-
-
-advState.away=false;
-
-
-
-var reward=
-
-1500+
-
-gameState.jobLevel*
-5000;
-
-
-
-reward*=
-
-(
-1+
-gameState.upgrades.crown.lvl
-);
-
-
-
-addGold(reward);
-
-
-
-alert(
-
-"⚔️ 遠征完成！\n\n"+
-"獲得 "+
-Math.floor(reward)+
-" 金幣"
-
-);
-
-
-
-updateUI();
-
-
-
-}
-
-else{
-
-
-updateUI();
-
-
-}
-
-
-},
-1000
-);
-
-
-
-updateUI();
-
-
-}
-
-
-
-
-/* =========================
-   UI 更新
-========================= */
-
-
-function updateUI(){
-
-
-
-if(!document.getElementById("gold"))
-return;
-
-
-
-document.getElementById(
-"gold"
-).innerHTML=
-gameState.gold+
-" 💰";
-
-
-
-
-document.getElementById(
-"job"
-).innerHTML=
-gameState.jobNames[
-gameState.jobLevel
-];
-
-
-
-
-document.getElementById(
-"gps"
-).innerHTML=
-(
-getIdleIncome()
-/
-(getCurrentInterval()/1000)
-)
-.toFixed(1);
-
-
-
-document.getElementById(
-"rebirth"
-).innerHTML=
-gameState.rebirthPower;
-
-
-
-/*
-商店
-*/
-
-
-for(
-var k in gameState.upgrades
-){
-
-
-var u=
-gameState.upgrades[k];
-
-
-document.getElementById(
-"lv-"+k
-).innerHTML=
-"Lv."+u.lvl;
-
-
-
-document.getElementById(
-"cost-"+k
-).innerHTML=
-u.lvl>=u.max?
-"MAX":
-u.cost+" 💰";
-
-
-
-}
-
-
-
-var p=
-document.getElementById(
-"prestige"
-);
-
-
-
-if(gameState.jobLevel>=3){
-
-
-p.innerHTML=
-"已達最高境界";
-
-
-p.disabled=true;
-
-
-}
-
-else{
-
-
-p.disabled=
-gameState.gold<
-gameState.prestigeRequirement;
-
-
-
-p.innerHTML=
-"轉職 → "+
-gameState.jobNames[
-gameState.jobLevel+1
-]
-+
-"<br>需求 "+
-gameState.prestigeRequirement+
-" 💰";
-
-
-
-}
-
-
-
-
-
-if(
-document.getElementById("adv")
-){
-
-
-if(gameState.jobLevel>=1){
-
-
-document.getElementById(
-"adv"
-).style.display=
-"block";
-
-
-
-document.getElementById(
-"advBtn"
-).disabled=
-advState.away;
-
-
-
-document.getElementById(
-"advBtn"
-).innerHTML=
-advState.away?
-"遠征中 "+advState.time+" 秒":
-"⚔️ 開始遠征";
-
-
-
-}
-
-else{
-
-
-document.getElementById(
-"adv"
-).style.display=
-"none";
-
-
-}
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-</script>
-/* ==========================
-   Canvas 初始化
-========================== */
-
-
-function initCanvas(){
-
-
-canvas=
-document.getElementById(
-"canvas"
-);
-
-
-ctx=
-canvas.getContext("2d");
-
-
-
-/*
-雨滴
-*/
-
-
-for(
-var i=0;i<40;i++
-){
-
-envState.drops.push({
-
-x:Math.random()*canvas.width,
-
-y:Math.random()*canvas.height,
-
-speed:
-2+Math.random()*5
-
-});
-
-}
-
-
-
-/*
-星星
-*/
-
-
-for(
-var i=0;i<30;i++
-){
-
-envState.stars.push({
-
-x:Math.random()*canvas.width,
-
-y:Math.random()*150,
-
-r:
-1+Math.random()*2
-
-});
-
-}
-
-
-
-/*
-粒子
-*/
-
-
-for(
-var i=0;i<35;i++
-){
-
-envState.particles.push({
-
-angle:
-Math.random()*6.28,
-
-radius:
-30+Math.random()*50,
-
-speed:
-0.01+Math.random()*0.03
-
-});
-
-
-}
-
-
-
-}
-
-
-
-
-/* ==========================
-   Canvas 點擊
-========================== */
-
-
-function canvasClick(e){
-
-
-if(advState.away)
-return;
-
-
-
-var rect=
-canvas.getBoundingClientRect();
-
-
-
-var x=
-e.clientX-rect.left;
-
-
-
-var y=
-e.clientY-rect.top;
-
-
-
-var value=
-getClickIncome();
-
-
-
-addGold(value);
-
-
-
-fxState.scale=
-0.8;
-
-
-
-fxState.texts.push({
-
-x:x,
-
-y:y,
-
-text:
-(showCrit?"CRITICAL ":"+")+
-value,
-
-life:100,
-
-crit:
-showCrit
-
-
-});
-
-
-
-fxState.waves.push({
-
-x:x,
-
-y:y,
-
-r:5,
-
-life:1
-
-});
-
-
-
-updateUI();
-
-
-}
-
-
-
-
-
-/* ==========================
-   動畫更新
-========================== */
-
-
-function updateAnimation(){
-
-
-
-if(fxState.scale<1)
-
-fxState.scale+=0.05;
-
-
-
-for(
-var i=fxState.texts.length-1;
-i>=0;i--
-){
-
-
-var t=
-fxState.texts[i];
-
-
-t.y-=1;
-
-
-t.life-=2;
-
-
-
-if(t.life<=0)
-
-fxState.texts.splice(i,1);
-
-
-
-}
-
-
-
-
-for(
-var i=fxState.waves.length-1;
-i>=0;i--
-){
-
-
-var w=
-fxState.waves[i];
-
-
-w.r+=4;
-
-
-w.life-=0.05;
-
-
-
-if(w.life<=0)
-
-fxState.waves.splice(i,1);
-
-
-
-}
-
-
-
-}
-
-
-
-
-/* ==========================
-   主渲染
-========================== */
-
-
-var angle=0;
-
-
-
-function render(){
-
-
-ctx.clearRect(
-0,
-0,
-canvas.width,
-canvas.height
-);
-
-
-
-angle+=0.04;
-
-
-
-/*
-背景
-*/
-
-
-var bg=
-ctx.createLinearGradient(
-0,
-0,
-0,
-canvas.height
-);
-
-
-
-bg.addColorStop(
-0,
-"#050816"
-);
-
-
-bg.addColorStop(
-1,
-"#172554"
-);
-
-
-
-ctx.fillStyle=bg;
-
-ctx.fillRect(
-0,
-0,
-canvas.width,
-canvas.height
-);
-
-
-
-
-/*
-星空
-*/
-
-
-ctx.fillStyle="#ffffff";
-
-
-for(
-var i=0;
-i<envState.stars.length;
-i++
-){
-
-
-var s=
-envState.stars[i];
-
-
-ctx.beginPath();
-
-ctx.arc(
-s.x,
-s.y,
-s.r,
-0,
-Math.PI*2
-);
-
-
-ctx.fill();
-
-
-
-}
-
-
-
-
-var cx=
-canvas.width/2;
-
-
-
-var cy=
-canvas.height/2;
-
-
-
-var color=
-gameState.jobColors[
-gameState.jobLevel
-];
-
-
-
-
-/*
-角色光環
-*/
-
-
-var aura=
-ctx.createRadialGradient(
-
-cx,
-cy,
-5,
-
-cx,
-cy,
-80
-
-);
-
-
-
-aura.addColorStop(
-0,
-"#ffffff"
-);
-
-
-aura.addColorStop(
-0.4,
-color
-);
-
-
-aura.addColorStop(
-1,
-"transparent"
-);
-
-
-
-ctx.fillStyle=aura;
-
-
-ctx.beginPath();
-
-ctx.arc(
-cx,
-cy,
-80,
-0,
-Math.PI*2
-);
-
-
-ctx.fill();
-
-
-
-
-
-/*
-粒子環繞
-*/
-
-
-for(
-var i=0;
-i<envState.particles.length;
-i++
-){
-
-
-var p=
-envState.particles[i];
-
-
-p.angle+=p.speed;
-
-
-
-var px=
-cx+
-Math.cos(p.angle)
-*p.radius;
-
-
-
-var py=
-cy+
-Math.sin(p.angle)
-*p.radius;
-
-
-
-ctx.fillStyle=color;
-
-
-ctx.beginPath();
-
-
-ctx.arc(
-px,
-py,
-2,
-0,
-Math.PI*2
-);
-
-
-ctx.fill();
-
-
-}
-
-
-
-
-/*
-角色縮放
-*/
-
-
-ctx.save();
-
-
-ctx.translate(
-cx,
-cy
-);
-
-
-ctx.scale(
-fxState.scale,
-fxState.scale
-);
-
-
-ctx.translate(
--cx,
--cy
-);
-
-
-
-drawHero(
-cx,
-cy,
-color
-);
-
-
-
-ctx.restore();
-
-
-
-
-drawEffects();
-
-
-
-updateAnimation();
-
-
-
-requestAnimationFrame(
-render
-);
-
-
-}
-
-
-
-
-
-/* ==========================
-   英雄角色
-========================== */
-
-
-function drawHero(
-x,
-y,
-color
-){
-
-
-
-/*
-披風
-*/
-
-
-ctx.fillStyle=
-gameState.jobLevel>=3?
-"#700000":
-"#111827";
-
-
-ctx.beginPath();
-
-
-ctx.moveTo(
-x-25,
-y+40
-);
-
-
-ctx.lineTo(
-x+25,
-y+40
-);
-
-
-ctx.lineTo(
-x+15,
-y-10
-);
-
-
-ctx.lineTo(
-x-15,
-y-10
-);
-
-
-ctx.closePath();
-
-
-ctx.fill();
-
-
-
-/*
-身體盔甲
-*/
-
-
-ctx.fillStyle="#94a3b8";
-
-
-ctx.fillRect(
-x-15,
-y-20,
-30,
-35
-);
-
-
-
-
-/*
-頭盔
-*/
-
-
-ctx.fillStyle="#475569";
-
-
-ctx.beginPath();
-
-
-ctx.arc(
-x,
-y-35,
-15,
-0,
-Math.PI*2
-);
-
-
-ctx.fill();
-
-
-
-
-/*
-眼睛
-*/
-
-
-ctx.fillStyle=color;
-
-
-ctx.fillRect(
-x-8,
-y-38,
-16,
-4
-);
-
-
-
-
-
-/*
-劍
-*/
-
-
-if(
-gameState.upgrades.sword.lvl>0
-){
-
-
-ctx.strokeStyle=
-"#ffffff";
-
-
-ctx.lineWidth=
-4;
-
-
-
-ctx.beginPath();
-
-
-ctx.moveTo(
-x-25,
-y
-);
-
-
-ctx.lineTo(
-x-25,
-y-60
-);
-
-
-ctx.stroke();
-
-
-
-}
-
-
-
-
-/*
-王冠
-*/
-
-
-if(
-gameState.upgrades.crown.lvl>0
-){
-
-
-ctx.fillStyle="#f1c40f";
-
-
-ctx.beginPath();
-
-
-ctx.moveTo(
-x-15,
-y-55
-);
-
-
-ctx.lineTo(
-x,
-y-75
-);
-
-
-ctx.lineTo(
-x+15,
-y-55
-);
-
-
-ctx.closePath();
-
-
-ctx.fill();
-
-
-}
-
-
-
-
-}
-
-
-
-
-
-
-function drawEffects(){
-
-
-
-for(
-var i=0;
-i<fxState.waves.length;
-i++
-){
-
-
-var w=
-fxState.waves[i];
-
-
-ctx.strokeStyle=
-gameState.jobColors[
-gameState.jobLevel
-];
-
-
-ctx.globalAlpha=
-w.life;
-
-
-ctx.lineWidth=3;
-
-
-ctx.beginPath();
-
-
-ctx.arc(
-w.x,
-w.y,
-w.r,
-0,
-Math.PI*2
-);
-
-
-ctx.stroke();
-
-
-
-}
-
-
-
-ctx.globalAlpha=1;
-
-
-
-for(
-var i=0;
-i<fxState.texts.length;
-i++
-){
-
-
-var t=
-fxState.texts[i];
-
-
-
-ctx.font=
-t.crit?
-"bold 28px Arial":
-"bold 18px Arial";
-
-
-
-ctx.fillStyle=
-t.crit?
-"#ff3333":
-"#ffffff";
-
-
-
-ctx.fillText(
-t.text,
-t.x,
-t.y
-);
-
-
-
-}
-
-
-
-}
 <body onload="gameInit()">
 
 
@@ -2011,6 +680,7 @@ t.y
 
 
 
+
 <div style="
 display:flex;
 gap:10px;
@@ -2018,7 +688,7 @@ margin-top:10px;
 ">
 
 
-<!--角色區-->
+<!-- Canvas區 -->
 
 <div class="panel"
 style="
@@ -2044,7 +714,10 @@ border-radius:10px;
 
 
 
-<!--功能區-->
+
+
+<!-- 功能區 -->
+
 
 <div style="
 width:330px;
@@ -2065,11 +738,14 @@ id="prestige"
 onclick="triggerPrestige()"
 style="width:100%"
 >
+
 轉職
+
 </button>
 
 
 </div>
+
 
 
 
@@ -2084,13 +760,15 @@ style="width:100%"
 
 
 
+
 <div>
 
-⚔ 光能巨劍
+⚔️ 光能巨劍
 
 <span id="lv-sword">
 Lv.0
 </span>
+
 
 <button onclick="
 buyUpgrade('sword')
@@ -2110,9 +788,10 @@ buyUpgrade('sword')
 
 
 
+
 <div>
 
-🛡 脈衝重盾
+🛡️ 脈衝重盾
 
 <span id="lv-shield">
 Lv.0
@@ -2129,13 +808,12 @@ buyUpgrade('shield')
 
 </button>
 
-
 </div>
 
 
 
-
 <br>
+
 
 
 
@@ -2168,6 +846,8 @@ buyUpgrade('armor')
 
 
 
+
+
 <div>
 
 👑 不朽王冠
@@ -2181,9 +861,11 @@ Lv.0
 buyUpgrade('crown')
 ">
 
+
 <span id="cost-crown">
 500
 </span>
+
 
 </button>
 
@@ -2193,6 +875,7 @@ buyUpgrade('crown')
 
 
 </div>
+
 
 
 
@@ -2211,6 +894,7 @@ style="display:none"
 </h3>
 
 
+
 <button
 id="advBtn"
 onclick="startAdventure()"
@@ -2227,9 +911,11 @@ style="width:100%"
 
 
 
+
 </div>
 
 </div>
+
 
 
 
@@ -2238,9 +924,1619 @@ style="width:100%"
 <script>
 
 
+
+
 /* ======================
-   初始化
+   Idle Engine
 ====================== */
+
+
+var lastTick=Date.now();
+
+
+
+function idleEngine(){
+
+
+var now=Date.now();
+
+
+var delta=
+now-lastTick;
+
+
+lastTick=now;
+
+
+
+var count=
+Math.floor(
+delta/getCurrentInterval()
+);
+
+
+
+if(count>0){
+
+
+addGold(
+getIdleIncome()*count
+);
+
+
+updateUI();
+
+
+}
+
+
+}
+
+
+
+setInterval(
+idleEngine,
+1000
+);
+
+
+
+
+
+/* ======================
+   自動存檔
+====================== */
+
+
+setInterval(
+
+function(){
+
+saveGame();
+
+},
+
+10000
+
+);
+
+
+
+
+
+
+/* ======================
+   商店升級
+====================== */
+
+
+function buyUpgrade(type){
+
+
+var item=
+gameState.upgrades[type];
+
+
+
+if(
+
+gameState.gold>=item.cost
+
+&&
+
+item.lvl<item.max
+
+){
+
+
+gameState.gold-=item.cost;
+
+
+
+item.lvl++;
+
+
+
+item.cost=
+
+Math.floor(
+
+item.cost*
+
+item.mult
+
+);
+
+
+
+updateUI();
+
+
+}
+
+
+}
+
+
+
+
+
+
+
+
+/* ======================
+   轉職系統
+====================== */
+
+
+function triggerPrestige(){
+
+
+if(
+
+gameState.gold <
+
+gameState.prestigeRequirement
+
+)
+
+return;
+
+
+
+if(
+gameState.jobLevel>=3
+)
+
+return;
+
+
+
+
+gameState.gold-=
+
+gameState.prestigeRequirement;
+
+
+
+gameState.jobLevel++;
+
+
+
+/*
+永久力量
+*/
+
+gameState.rebirthPower++;
+
+
+
+
+
+/*
+保留30%裝備
+*/
+
+
+for(
+var key in gameState.upgrades
+){
+
+
+var u=
+gameState.upgrades[key];
+
+
+u.lvl=
+
+Math.floor(
+u.lvl*0.3
+);
+
+
+
+u.cost=u.baseCost;
+
+
+
+for(
+var i=0;
+i<u.lvl;
+i++
+){
+
+u.cost=
+
+Math.floor(
+u.cost*u.mult
+);
+
+}
+
+
+}
+
+
+
+
+
+gameState.prestigeRequirement*=6;
+
+
+
+
+alert(
+
+"✨ 覺醒成功！\n\n"+
+
+"晉升："+
+gameState.jobNames[
+gameState.jobLevel
+]+
+
+"\n\n永久力量 +1\n"+
+"全部收益 +10%"
+
+);
+
+
+
+updateUI();
+
+
+}
+
+
+
+
+
+
+
+/* ======================
+   遠征系統
+====================== */
+
+
+function startAdventure(){
+
+
+if(
+gameState.jobLevel<1
+||
+advState.away
+)
+
+return;
+
+
+
+
+advState.away=true;
+
+
+advState.time=30;
+
+
+
+
+advState.timer=
+
+setInterval(
+
+function(){
+
+
+
+advState.time--;
+
+
+
+
+
+if(
+advState.time<=0
+){
+
+
+
+clearInterval(
+advState.timer
+);
+
+
+
+advState.away=false;
+
+
+
+
+var reward=
+
+1500+
+
+gameState.jobLevel*
+5000;
+
+
+
+reward*=
+
+(
+1+
+gameState.upgrades.crown.lvl
+);
+
+
+
+addGold(reward);
+
+
+
+
+
+alert(
+
+"⚔️ 遠征完成！\n\n"+
+"獲得 "+
+Math.floor(reward)+
+" 金幣"
+
+);
+
+
+
+
+
+updateUI();
+
+
+
+}
+
+else{
+
+
+updateUI();
+
+
+}
+
+
+
+},
+
+1000
+
+);
+
+
+
+
+updateUI();
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ======================
+   UI更新
+====================== */
+
+
+function updateUI(){
+
+
+
+if(
+!document.getElementById("gold")
+)
+
+return;
+
+
+
+
+
+document.getElementById("gold")
+.innerHTML=
+
+gameState.gold+
+" 💰";
+
+
+
+
+
+document.getElementById("job")
+.innerHTML=
+
+gameState.jobNames[
+gameState.jobLevel
+];
+
+
+
+
+
+document.getElementById("gps")
+.innerHTML=
+
+(
+
+getIdleIncome()
+
+/
+
+(getCurrentInterval()/1000)
+
+)
+
+.toFixed(1);
+
+
+
+
+
+document.getElementById("rebirth")
+.innerHTML=
+
+gameState.rebirthPower;
+
+
+
+
+
+
+for(
+var k in gameState.upgrades
+){
+
+
+var u=
+gameState.upgrades[k];
+
+
+
+document.getElementById(
+"lv-"+k
+).innerHTML=
+
+"Lv."+u.lvl;
+
+
+
+
+document.getElementById(
+"cost-"+k
+).innerHTML=
+
+u.lvl>=u.max?
+
+"MAX":
+
+u.cost+" 💰";
+
+
+
+}
+
+
+
+
+
+var btn=
+
+document.getElementById(
+"prestige"
+);
+
+
+
+
+
+if(
+gameState.jobLevel>=3
+){
+
+
+btn.innerHTML=
+
+"已達最高境界";
+
+
+btn.disabled=true;
+
+
+}
+
+else{
+
+
+btn.disabled=
+
+gameState.gold <
+
+gameState.prestigeRequirement;
+
+
+
+btn.innerHTML=
+
+"轉職 → "+
+
+gameState.jobNames[
+gameState.jobLevel+1
+]+
+
+"<br>需求 "+
+
+gameState.prestigeRequirement+
+" 💰";
+
+
+}
+
+
+
+
+
+
+
+if(gameState.jobLevel>=1){
+
+
+
+document.getElementById(
+"adv"
+).style.display="block";
+
+
+
+document.getElementById(
+"advBtn"
+).disabled=
+
+advState.away;
+
+
+
+document.getElementById(
+"advBtn"
+).innerHTML=
+
+advState.away?
+
+"遠征中 "+advState.time+" 秒":
+
+"⚔️ 開始遠征";
+
+
+
+}
+
+else{
+
+
+document.getElementById(
+"adv"
+).style.display="none";
+
+
+}
+
+
+
+}
+
+
+
+
+</script>
+<script>
+
+
+/* =========================
+   Canvas 初始化
+========================= */
+
+
+function initCanvas(){
+
+
+canvas=
+document.getElementById("canvas");
+
+
+ctx=
+canvas.getContext("2d");
+
+
+
+for(
+var i=0;i<40;i++
+){
+
+envState.drops.push({
+
+x:Math.random()*canvas.width,
+
+y:Math.random()*canvas.height,
+
+speed:2+Math.random()*5
+
+});
+
+}
+
+
+
+
+for(
+var i=0;i<30;i++
+){
+
+envState.stars.push({
+
+x:Math.random()*canvas.width,
+
+y:Math.random()*150,
+
+r:1+Math.random()*2
+
+});
+
+}
+
+
+
+
+
+for(
+var i=0;i<35;i++
+){
+
+envState.particles.push({
+
+angle:Math.random()*6.28,
+
+radius:30+Math.random()*50,
+
+speed:0.01+Math.random()*0.03
+
+});
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+/* =========================
+   Canvas 點擊
+========================= */
+
+
+function canvasClick(e){
+
+
+if(advState.away)
+return;
+
+
+
+var rect=
+canvas.getBoundingClientRect();
+
+
+
+var x=
+e.clientX-rect.left;
+
+
+
+var y=
+e.clientY-rect.top;
+
+
+
+
+var value=
+getClickIncome();
+
+
+
+addGold(value);
+
+
+
+
+fxState.scale=0.8;
+
+
+
+
+fxState.texts.push({
+
+x:x,
+
+y:y,
+
+text:
+
+(showCrit?"CRITICAL ":"+")+
+value,
+
+life:100,
+
+crit:showCrit
+
+});
+
+
+
+
+
+fxState.waves.push({
+
+x:x,
+
+y:y,
+
+r:5,
+
+life:1
+
+});
+
+
+
+updateUI();
+
+
+
+}
+
+
+
+
+
+
+
+/* =========================
+   動畫更新
+========================= */
+
+
+function updateAnimation(){
+
+
+if(
+fxState.scale<1
+)
+
+fxState.scale+=0.05;
+
+
+
+
+
+
+for(
+var i=fxState.texts.length-1;
+i>=0;
+i--
+){
+
+
+var t=
+fxState.texts[i];
+
+
+t.y-=1;
+
+
+t.life-=2;
+
+
+
+if(t.life<=0)
+
+fxState.texts.splice(i,1);
+
+
+}
+
+
+
+
+
+
+for(
+var i=fxState.waves.length-1;
+i>=0;
+i--
+){
+
+
+var w=
+fxState.waves[i];
+
+
+w.r+=4;
+
+
+w.life-=0.05;
+
+
+
+if(w.life<=0)
+
+fxState.waves.splice(i,1);
+
+
+
+}
+
+
+}
+
+
+
+
+
+
+
+
+/* =========================
+   主渲染
+========================= */
+
+
+var angle=0;
+
+
+
+function render(){
+
+
+ctx.clearRect(
+
+0,
+
+0,
+
+canvas.width,
+
+canvas.height
+
+);
+
+
+
+angle+=0.04;
+
+
+
+
+
+var bg=
+
+ctx.createLinearGradient(
+
+0,
+
+0,
+
+0,
+
+canvas.height
+
+);
+
+
+
+bg.addColorStop(
+0,
+"#050816"
+);
+
+
+
+bg.addColorStop(
+1,
+"#172554"
+);
+
+
+
+ctx.fillStyle=bg;
+
+
+ctx.fillRect(
+
+0,
+
+0,
+
+canvas.width,
+
+canvas.height
+
+);
+
+
+
+
+
+
+
+
+/* 星空 */
+
+
+ctx.fillStyle="#ffffff";
+
+
+
+for(
+var i=0;
+i<envState.stars.length;
+i++
+){
+
+
+var s=
+envState.stars[i];
+
+ctx.beginPath();
+
+ctx.arc(
+
+s.x,
+
+s.y,
+
+s.r,
+
+0,
+
+Math.PI*2
+
+);
+
+
+ctx.fill();
+
+
+
+}
+
+
+
+
+
+
+
+
+var cx=
+canvas.width/2;
+
+
+var cy=
+canvas.height/2;
+
+
+
+var color=
+
+gameState.jobColors[
+gameState.jobLevel
+];
+
+
+
+
+
+
+
+
+/* 光環 */
+
+
+var aura=
+
+ctx.createRadialGradient(
+
+cx,
+
+cy,
+
+5,
+
+cx,
+
+cy,
+
+80
+
+);
+
+
+
+aura.addColorStop(
+0,
+"#ffffff"
+);
+
+
+aura.addColorStop(
+0.4,
+color
+);
+
+
+aura.addColorStop(
+1,
+"transparent"
+);
+
+
+
+ctx.fillStyle=aura;
+
+
+
+ctx.beginPath();
+
+
+ctx.arc(
+
+cx,
+
+cy,
+
+80,
+
+0,
+
+Math.PI*2
+
+);
+
+
+
+ctx.fill();
+
+
+
+
+
+
+
+
+/* 粒子 */
+
+
+for(
+var i=0;
+i<envState.particles.length;
+i++
+){
+
+
+var p=
+envState.particles[i];
+
+
+p.angle+=p.speed;
+
+
+
+var px=
+
+cx+
+Math.cos(p.angle)
+*p.radius;
+
+
+
+var py=
+
+cy+
+Math.sin(p.angle)
+*p.radius;
+
+
+
+ctx.fillStyle=color;
+
+
+
+ctx.beginPath();
+
+ctx.arc(
+
+px,
+
+py,
+
+2,
+
+0,
+
+Math.PI*2
+
+);
+
+
+
+ctx.fill();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+ctx.save();
+
+
+
+ctx.translate(
+
+cx,
+
+cy
+
+);
+
+
+
+ctx.scale(
+
+fxState.scale,
+
+fxState.scale
+
+);
+
+
+
+ctx.translate(
+
+-cx,
+
+-cy
+
+);
+
+
+
+drawHero(
+cx,
+cy,
+color
+);
+
+
+
+ctx.restore();
+
+
+
+
+
+drawEffects();
+
+
+
+updateAnimation();
+
+
+
+requestAnimationFrame(render);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* =========================
+   英雄角色
+========================= */
+
+
+function drawHero(x,y,color){
+
+
+
+/* 披風 */
+
+
+ctx.fillStyle=
+
+gameState.jobLevel>=3?
+
+"#700000":
+
+"#111827";
+
+
+
+ctx.beginPath();
+
+
+ctx.moveTo(
+x-25,
+y+40
+);
+
+
+ctx.lineTo(
+x+25,
+y+40
+);
+
+
+ctx.lineTo(
+x+15,
+y-10
+);
+
+
+ctx.lineTo(
+x-15,
+y-10
+);
+
+
+ctx.closePath();
+
+
+ctx.fill();
+
+
+
+
+
+
+/* 身體 */
+
+
+ctx.fillStyle="#94a3b8";
+
+
+ctx.fillRect(
+
+x-15,
+
+y-20,
+
+30,
+
+35
+
+);
+
+
+
+
+
+
+
+/* 頭盔 */
+
+
+ctx.fillStyle="#475569";
+
+
+ctx.beginPath();
+
+
+ctx.arc(
+
+x,
+
+y-35,
+
+15,
+
+0,
+
+Math.PI*2
+
+);
+
+
+ctx.fill();
+
+
+
+
+
+
+
+
+/* 眼睛 */
+
+
+ctx.fillStyle=color;
+
+
+ctx.fillRect(
+
+x-8,
+
+y-38,
+
+16,
+
+4
+
+);
+
+
+
+
+
+
+
+
+
+/* 劍 */
+
+
+if(
+gameState.upgrades.sword.lvl>0
+){
+
+
+ctx.strokeStyle="#ffffff";
+
+
+ctx.lineWidth=4;
+
+
+
+ctx.beginPath();
+
+
+ctx.moveTo(
+x-25,
+y
+);
+
+
+ctx.lineTo(
+x-25,
+y-60
+);
+
+
+ctx.stroke();
+
+
+
+}
+
+
+
+
+
+
+
+
+/* 王冠 */
+
+
+if(
+gameState.upgrades.crown.lvl>0
+){
+
+
+ctx.fillStyle="#f1c40f";
+
+
+ctx.beginPath();
+
+
+ctx.moveTo(
+x-15,
+y-55
+);
+
+
+ctx.lineTo(
+x,
+y-75
+);
+
+
+ctx.lineTo(
+x+15,
+y-55
+);
+
+
+ctx.closePath();
+
+
+ctx.fill();
+
+
+
+}
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* =========================
+   特效
+========================= */
+
+
+function drawEffects(){
+
+
+
+for(
+var i=0;
+i<fxState.waves.length;
+i++
+){
+
+
+var w=
+fxState.waves[i];
+
+
+
+ctx.globalAlpha=w.life;
+
+
+
+ctx.strokeStyle=
+
+gameState.jobColors[
+gameState.jobLevel
+];
+
+
+
+ctx.lineWidth=3;
+
+
+
+ctx.beginPath();
+
+
+ctx.arc(
+
+w.x,
+
+w.y,
+
+w.r,
+
+0,
+
+Math.PI*2
+
+);
+
+
+
+ctx.stroke();
+
+
+
+}
+
+
+
+ctx.globalAlpha=1;
+
+
+
+
+
+
+for(
+var i=0;
+i<fxState.texts.length;
+i++
+){
+
+
+var t=
+fxState.texts[i];
+
+
+
+ctx.font=
+
+t.crit?
+
+"bold 28px Arial":
+
+"bold 18px Arial";
+
+
+
+ctx.fillStyle=
+
+t.crit?
+
+"#ff3333":
+
+"#ffffff";
+
+
+
+ctx.fillText(
+
+t.text,
+
+t.x,
+
+t.y
+
+);
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =========================
+   遊戲啟動
+========================= */
 
 
 function gameInit(){
@@ -2251,7 +2547,6 @@ loadGame();
 
 
 initCanvas();
-
 
 
 updateUI();
@@ -2265,10 +2560,9 @@ render();
 
 
 
-
-
 </script>
 
 
 </body>
+
 </html>
