@@ -5,15 +5,13 @@
 <meta charset="utf-8">
 
 <title>
-豪華轉職：掛機冒險 Ultra Extreme v2.0
+豪華轉職：掛機冒險 Ultra Extreme v3.0
 </title>
-
 
 <hta:application
  id="idleGame"
  applicationname="IdleAdventureUltra"
  border="thin"
- borderstyle="normal"
  caption="yes"
  maximizebutton="no"
  minimizebutton="yes"
@@ -21,220 +19,437 @@
  singleinstance="yes"
 />
 
+<style>
+
+*{
+box-sizing:border-box;
+font-family:"Microsoft JhengHei";
+}
+
+body{
+margin:0;
+padding:12px;
+background:#050816;
+color:white;
+overflow:hidden;
+}
+
+.header{
+background:#111827;
+border:1px solid #45f3ff;
+border-radius:12px;
+padding:10px;
+text-align:center;
+}
+
+.gold{
+font-size:28px;
+font-weight:bold;
+color:#f1c40f;
+}
+
+.panel{
+background:#0f172a;
+border:1px solid #334155;
+border-radius:12px;
+padding:10px;
+margin-top:8px;
+}
+
+button{
+background:#162447;
+color:white;
+border:1px solid #45f3ff;
+padding:8px;
+border-radius:8px;
+cursor:pointer;
+}
+
+button:hover{
+background:#1e3a8a;
+}
+
+button:disabled{
+opacity:.4;
+}
+
+.title{
+font-size:18px;
+color:#45f3ff;
+}
+
+.item{
+margin:8px 0;
+}
+
+</style>
+
 
 <script>
 
-window.resizeTo(620,720);
+
+window.resizeTo(700,760);
+
 window.moveTo(
-(window.screen.availWidth-620)/2,
-(window.screen.availHeight-720)/2
+(screen.width-700)/2,
+(screen.height-760)/2
 );
 
 
 
-/* ===========================
-   遊戲核心資料
-=========================== */
+/*
+================================
+  GAME CORE
+================================
+*/
+
+
+var SAVE_KEY="IdleAdventureUltra_v3";
+
 
 
 var gameState={
 
-    gold:0,
 
-    baseGold:1,
-
-    baseInterval:2000,
-
-    clickPower:1,
+gold:0,
 
 
-    jobLevel:0,
+totalGold:0,
 
 
-    jobNames:[
-        "見習冒險者",
-        "皇家聖騎士",
-        "元素大魔導",
-        "影刃弒神者"
-    ],
+level:1,
 
 
-    jobColors:[
-        "#a0a5c1",
-        "#f1c40f",
-        "#3498db",
-        "#e74c3c"
-    ],
+exp:0,
 
 
-    rebirthPower:0,
+clickPower:1,
 
 
-    prestigeRequirement:1200,
+baseInterval:2000,
 
 
-    upgrades:{
+
+jobLevel:0,
 
 
-        sword:{
-            name:"光能巨劍",
-            lvl:0,
-            max:8,
-            cost:10,
-            baseCost:10,
-            mult:1.6
-        },
+jobs:[
+
+"見習冒險者",
+
+"皇家聖騎士",
+
+"元素大魔導",
+
+"影刃弒神者",
+
+"星界主宰"
+
+],
 
 
-        shield:{
-            name:"脈衝重盾",
-            lvl:0,
-            max:8,
-            cost:30,
-            baseCost:30,
-            mult:1.7
-        },
+
+jobColors:[
+
+"#94a3b8",
+
+"#facc15",
+
+"#38bdf8",
+
+"#ef4444",
+
+"#a855f7"
+
+],
 
 
-        armor:{
-            name:"納米重鎧",
-            lvl:0,
-            max:8,
-            cost:100,
-            baseCost:100,
-            mult:1.8
-        },
+
+rebirthPower:0,
 
 
-        crown:{
-            name:"不朽王冠",
-            lvl:0,
-            max:8,
-            cost:500,
-            baseCost:500,
-            mult:2
-        }
+prestigeCost:1200,
 
-    }
+
+
+buff:{
+
+
+goldBonus:0,
+
+
+damageBonus:0,
+
+
+speedBonus:0
+
+
+},
+
+
+
+skills:{
+
+
+rage:{
+
+level:0,
+
+cooldown:60,
+
+time:0
+
+},
+
+
+fortune:{
+
+level:0,
+
+cooldown:120,
+
+time:0
+
+}
+
+
+},
+
+
+
+
+equipment:{
+
+
+sword:{
+
+name:"光能巨劍",
+
+level:0,
+
+max:10,
+
+cost:10,
+
+mult:1.6
+
+},
+
+
+shield:{
+
+name:"脈衝重盾",
+
+level:0,
+
+max:10,
+
+cost:30,
+
+mult:1.7
+
+},
+
+
+armor:{
+
+name:"納米重鎧",
+
+level:0,
+
+max:10,
+
+cost:100,
+
+mult:1.8
+
+},
+
+
+crown:{
+
+name:"不朽王冠",
+
+level:0,
+
+max:10,
+
+cost:500,
+
+mult:2
+
+}
+
+
+},
+
+
+
+
+missions:{
+
+
+click:0,
+
+
+gold:0,
+
+
+upgrade:0
+
+
+},
+
+
+
+achievements:{
+
+
+firstJob:false,
+
+
+million:false,
+
+
+master:false
+
+
+}
+
+
 
 };
 
 
 
 
-/* ===========================
-   遠征資料
-=========================== */
+
+/*
+================================
+ Canvas
+================================
+*/
 
 
-var advState={
+var canvas;
 
-    away:false,
+var ctx;
 
-    time:0,
 
-    timer:null
+
+var fx={
+
+
+texts:[],
+
+
+waves:[],
+
+
+scale:1
+
+
+};
+
+
+
+var environment={
+
+
+stars:[],
+
+
+particles:[],
+
+
+rain:[]
+
 
 };
 
 
 
 
-/* ===========================
-   Canvas資料
-=========================== */
+/*
+================================
+ 初始化資料補全
+================================
+*/
 
 
-var canvas=null;
-
-var ctx=null;
+function mergeObject(target,source){
 
 
-
-var fxState={
-
-    texts:[],
-
-    waves:[],
-
-    scale:1
-
-};
+for(var k in source){
 
 
-
-var envState={
-
-    rain:false,
-
-    drops:[],
-
-    stars:[],
-
-    particles:[]
-
-};
+if(
+typeof source[k]=="object"
+&&
+source[k]!=null
+&&
+!Array.isArray(source[k])
+){
 
 
+if(!target[k])
+target[k]={};
 
 
-/* ===========================
-   金幣增加
-=========================== */
+mergeObject(
+target[k],
+source[k]
+);
 
 
-function addGold(value){
+}
+else{
 
-    var maxGold=999999999999;
+
+if(target[k]===undefined)
+
+target[k]=source[k];
 
 
-    gameState.gold=Math.min(
+}
 
-        maxGold,
 
-        gameState.gold+
-        Math.floor(value)
 
-    );
+}
+
+
 
 }
 
 
 
 
-/* ===========================
-   存檔系統
-=========================== */
+
+
+/*
+================================
+ 存檔
+================================
+*/
 
 
 function saveGame(){
 
-    try{
+
+localStorage[SAVE_KEY]=JSON.stringify({
 
 
-        var data={
-
-            state:gameState,
-
-            time:Date.now()
-
-        };
+state:gameState,
 
 
-        window.localStorage.setItem(
-
-            "IdleAdventureSave",
-
-            JSON.stringify(data)
-
-        );
+time:Date.now()
 
 
-    }
-    catch(e){}
+});
 
 
 }
+
 
 
 
@@ -242,94 +457,95 @@ function saveGame(){
 function loadGame(){
 
 
-    try{
-
-
-        var save=
-
-        window.localStorage.getItem(
-            "IdleAdventureSave"
-        );
+var data=
+localStorage[SAVE_KEY];
 
 
 
-        if(!save)
-            return;
+if(!data)
+return;
 
 
 
-        var data=
-        JSON.parse(save);
+try{
+
+
+var save=
+JSON.parse(data);
 
 
 
-        gameState=data.state;
+mergeObject(
+gameState,
+save.state
+);
 
 
 
-        var offline=
-
-        (Date.now()-data.time)/1000;
-
-
-
-        if(offline>5){
-
-
-            var reward=
-
-            Math.floor(
-
-                getIdleIncome()
-                *
-                offline
-                /
-                (getCurrentInterval()/1000)
-
-            );
+var offline=
+(Date.now()-save.time)/1000;
 
 
 
-            reward=Math.min(
-                reward,
-                999999999
-            );
+if(offline>10){
 
 
 
-            addGold(reward);
+var reward=
+Math.floor(
+getIdleIncome()
+*
+offline
+/
+(getInterval()/1000)
+);
 
 
 
-            setTimeout(function(){
-
-
-                alert(
-
-                "💾 離線收益\n\n"+
-                "離線時間："+
-                Math.floor(offline)+
-                " 秒\n\n"+
-                "獲得金幣："+
-                reward
-
-                );
-
-
-            },500);
+reward=Math.min(
+reward,
+999999999
+);
 
 
 
-        }
+addGold(reward);
 
 
 
-    }
-    catch(e){
+setTimeout(function(){
+
+
+alert(
+
+"💾 離線收益\n\n"+
+"時間："+
+Math.floor(offline)+
+" 秒\n"+
+"獲得："+
+reward+
+" 金幣"
+
+);
 
 
 
-    }
+},300);
+
+
+
+}
+
+
+
+}catch(e){
+
+
+console.log(e);
+
+
+}
+
 
 
 }
@@ -338,77 +554,138 @@ function loadGame(){
 
 
 
-/* ===========================
-   職業倍率
-=========================== */
+/*
+================================
+ 收益計算
+================================
+*/
+
+
+function addGold(v){
+
+
+v=Math.floor(v);
+
+
+
+gameState.gold+=v;
+
+
+gameState.totalGold+=v;
+
+
+
+checkAchievement();
+
+
+}
+
+
+
 
 
 function getJobMultiplier(){
 
 
-    return [
+return [
 
-        1,
+1,
 
-        2.5,
+2.5,
 
-        6,
+6,
 
-        15
+15,
 
-    ][gameState.jobLevel];
+30
 
+][gameState.jobLevel];
 
 }
 
 
-
-
-
-/* ===========================
-   自動收益
-=========================== */
 
 
 function getIdleIncome(){
 
 
-    var base=
-
-    gameState.baseGold+
-
-    gameState.upgrades.sword.lvl*2;
+var value=
 
 
-
-    var armor=
-
-    1+
-
-    gameState.upgrades.armor.lvl*0.5;
+gameState.level
++
+gameState.equipment.sword.level*2;
 
 
 
-    var total=
+value*=
 
-    base*armor;
-
-
-
-    total*=getJobMultiplier();
-
-
-
-    total*=
-
-    (
-        1+
-        gameState.rebirthPower*0.1
-    );
+(
+1+
+gameState.equipment.armor.level*0.5
+);
 
 
 
-    return Math.floor(total);
+value*=getJobMultiplier();
+
+
+
+value*=
+
+(
+1+
+gameState.rebirthPower*0.1
+);
+
+
+
+value*=
+
+(
+1+
+gameState.buff.goldBonus
+);
+
+
+
+return Math.floor(value);
+
+
+}
+
+
+
+
+function getInterval(){
+
+
+var t=gameState.baseInterval;
+
+
+
+t-=
+
+gameState.equipment.shield.level*150;
+
+
+
+t*=
+
+(
+1-
+gameState.buff.speedBonus
+);
+
+
+
+if(t<300)
+
+t=300;
+
+
+
+return t;
 
 
 }
@@ -417,518 +694,72 @@ function getIdleIncome(){
 
 
 
-
-/* ===========================
-   產金速度
-=========================== */
-
-
-function getCurrentInterval(){
+/*
+================================
+ 點擊
+================================
+*/
 
 
-    var t=
-
-    gameState.baseInterval-
-
-    gameState.upgrades.shield.lvl*160;
+var critical=false;
 
 
 
-    if(gameState.jobLevel>=2)
-
-        t*=0.7;
+function getClickPower(){
 
 
-
-    return Math.max(
-        250,
-        t
-    );
+var value=
 
 
-}
+gameState.clickPower
++
+gameState.equipment.sword.level*3;
 
 
 
-
-
-/* ===========================
-   點擊收益
-=========================== */
-
-
-var showCrit=false;
+value*=getJobMultiplier();
 
 
 
-function getClickIncome(){
+value*=
 
-
-    var value=
-
-    gameState.clickPower+
-
-    gameState.upgrades.sword.lvl*2;
-
-
-
-    value*=
-
-    (
-        1+
-        gameState.upgrades.crown.lvl*1.5
-    );
+(
+1+
+gameState.buff.damageBonus
+);
 
 
 
-    value*=getJobMultiplier();
+if(Math.random()<0.1){
 
 
-
-    value*=
-
-    (
-        1+
-        gameState.rebirthPower*0.1
-    );
+value*=10;
 
 
-
-    if(Math.random()<0.1){
-
-
-        value*=10;
-
-        showCrit=true;
+critical=true;
 
 
-    }
-    else{
+}else{
 
 
-        showCrit=false;
-
-
-    }
-
-
-
-    return Math.floor(value);
+critical=false;
 
 
 }
 
 
 
-</script>
+return Math.floor(value);
 
-
-
-<style>
-
-
-html,body{
-
-    width:100%;
-
-    height:100%;
 
 }
 
-
-
-*{
-
-    box-sizing:border-box;
-
-    font-family:
-    "Microsoft JhengHei";
-
-}
-
-
-
-body{
-
-    margin:0;
-
-    padding:12px;
-
-    background:#080b12;
-
-    color:white;
-
-    overflow:hidden;
-
-}
-
-
-
-.header{
-
-    background:#1f2833;
-
-    border:1px solid #45f3ff;
-
-    border-radius:12px;
-
-    padding:12px;
-
-    text-align:center;
-
-}
-
-
-
-.gold{
-
-    font-size:26px;
-
-    color:#f1c40f;
-
-    font-weight:bold;
-
-}
-
-
-
-.panel{
-
-    background:#111827;
-
-    border-radius:10px;
-
-    padding:10px;
-
-    margin-top:8px;
-
-    border:1px solid #34495e;
-
-}
-
-
-
-button{
-
-    background:#162447;
-
-    color:white;
-
-    border:
-
-    1px solid #45f3ff;
-
-    padding:8px;
-
-    border-radius:8px;
-
-    cursor:pointer;
-
-}
-
-
-
-button:disabled{
-
-    opacity:.4;
-
-}
-
-
-
-
-</style>
-
-
-</head>
-<body onload="gameInit()">
-
-
-<div class="header">
-
-<div class="gold">
-💰 <span id="gold">0</span>
-</div>
-
-
-<div>
-職業：
-<span id="job">
-見習冒險者
-</span>
-</div>
-
-
-<div>
-每秒收益：
-<span id="gps">
-0
-</span>
-</div>
-
-
-<div>
-永久力量：
-<span id="rebirth">
-0
-</span>
-</div>
-
-
-</div>
-
-
-
-
-
-<div style="
-display:flex;
-gap:10px;
-margin-top:10px;
-">
-
-
-<!-- Canvas區 -->
-
-<div class="panel"
-style="
-width:230px;
-height:430px;
-padding:5px;
-">
-
-
-<canvas
-id="canvas"
-width="220"
-height="420"
-onclick="canvasClick(event)"
-style="
-border-radius:10px;
-">
-</canvas>
-
-
-</div>
-
-
-
-
-
-
-<!-- 功能區 -->
-
-
-<div style="
-width:330px;
-">
-
-
-
-<div class="panel">
-
-
-<h3>
-⚔️ 聖殿轉職
-</h3>
-
-
-<button
-id="prestige"
-onclick="triggerPrestige()"
-style="width:100%"
->
-
-轉職
-
-</button>
-
-
-</div>
-
-
-
-
-
-
-<div class="panel">
-
-
-<h3>
-🛠 軍備升級
-</h3>
-
-
-
-
-<div>
-
-⚔️ 光能巨劍
-
-<span id="lv-sword">
-Lv.0
-</span>
-
-
-<button onclick="
-buyUpgrade('sword')
-">
-
-<span id="cost-sword">
-10
-</span>
-
-</button>
-
-</div>
-
-
-
-<br>
-
-
-
-
-<div>
-
-🛡️ 脈衝重盾
-
-<span id="lv-shield">
-Lv.0
-</span>
-
-
-<button onclick="
-buyUpgrade('shield')
-">
-
-<span id="cost-shield">
-30
-</span>
-
-</button>
-
-</div>
-
-
-
-<br>
-
-
-
-
-<div>
-
-👕 納米重鎧
-
-<span id="lv-armor">
-Lv.0
-</span>
-
-
-<button onclick="
-buyUpgrade('armor')
-">
-
-<span id="cost-armor">
-100
-</span>
-
-</button>
-
-
-</div>
-
-
-
-
-<br>
-
-
-
-
-
-<div>
-
-👑 不朽王冠
-
-<span id="lv-crown">
-Lv.0
-</span>
-
-
-<button onclick="
-buyUpgrade('crown')
-">
-
-
-<span id="cost-crown">
-500
-</span>
-
-
-</button>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-<div
-class="panel"
-id="adv"
-style="display:none"
->
-
-
-<h3>
-🌎 邊境遠征
-</h3>
-
-
-
-<button
-id="advBtn"
-onclick="startAdventure()"
-style="width:100%"
->
-
-開始遠征
-
-</button>
-
-
-</div>
-
-
-
-
-
-</div>
-
-</div>
-
-
-
-
-
-
-<script>
-
-
-
-
-/* ======================
-   Idle Engine
-====================== */
+ 
+/*
+================================
+ Idle Engine
+================================
+*/
 
 
 var lastTick=Date.now();
@@ -951,7 +782,7 @@ lastTick=now;
 
 var count=
 Math.floor(
-delta/getCurrentInterval()
+delta/getInterval()
 );
 
 
@@ -970,81 +801,53 @@ updateUI();
 }
 
 
+
 }
 
 
 
-setInterval(
-idleEngine,
-1000
-);
+
+/*
+================================
+ 裝備升級
+================================
+*/
 
 
+function buyEquipment(type){
 
 
-
-/* ======================
-   自動存檔
-====================== */
-
-
-setInterval(
-
-function(){
-
-saveGame();
-
-},
-
-10000
-
-);
-
-
-
-
-
-
-/* ======================
-   商店升級
-====================== */
-
-
-function buyUpgrade(type){
-
-
-var item=
-gameState.upgrades[type];
+var e=
+gameState.equipment[type];
 
 
 
 if(
+e.level>=e.max
+)
 
-gameState.gold>=item.cost
+return;
 
-&&
 
-item.lvl<item.max
 
+if(
+gameState.gold>=e.cost
 ){
 
 
-gameState.gold-=item.cost;
+gameState.gold-=e.cost;
+
+
+e.level++;
+
+
+gameState.missions.upgrade++;
 
 
 
-item.lvl++;
-
-
-
-item.cost=
-
+e.cost=
 Math.floor(
-
-item.cost*
-
-item.mult
-
+e.cost*e.mult
 );
 
 
@@ -1055,29 +858,26 @@ updateUI();
 }
 
 
+
 }
 
 
 
 
 
+/*
+================================
+ 轉職系統
+================================
+*/
 
 
+function prestige(){
 
-/* ======================
-   轉職系統
-====================== */
-
-
-function triggerPrestige(){
 
 
 if(
-
-gameState.gold <
-
-gameState.prestigeRequirement
-
+gameState.jobLevel>=4
 )
 
 return;
@@ -1085,17 +885,16 @@ return;
 
 
 if(
-gameState.jobLevel>=3
+gameState.gold<
+gameState.prestigeCost
 )
 
 return;
-
 
 
 
 gameState.gold-=
-
-gameState.prestigeRequirement;
+gameState.prestigeCost;
 
 
 
@@ -1103,212 +902,113 @@ gameState.jobLevel++;
 
 
 
-/*
-永久力量
-*/
-
 gameState.rebirthPower++;
 
 
 
+gameState.prestigeCost*=6;
+
+
+
+gameState.buff.goldBonus+=0.1;
+
+
+
+alert(
+
+"✨ 覺醒完成！\n\n"+
+"新職業："+
+gameState.jobs[
+gameState.jobLevel
+]+
+
+"\n永久力量 +1"
+
+);
+
+
+
+if(
+gameState.jobLevel>=1
+)
+
+gameState.achievements.firstJob=true;
+
+
+
+updateUI();
+
+
+}
+
+
 
 
 /*
-保留30%裝備
+================================
+ 技能系統
+================================
 */
 
 
-for(
-var key in gameState.upgrades
-){
-
-
-var u=
-gameState.upgrades[key];
-
-
-u.lvl=
-
-Math.floor(
-u.lvl*0.3
-);
+function useSkill(type){
 
 
 
-u.cost=u.baseCost;
+var s=
+gameState.skills[type];
 
 
 
-for(
-var i=0;
-i<u.lvl;
-i++
-){
-
-u.cost=
-
-Math.floor(
-u.cost*u.mult
-);
-
-}
-
-
-}
-
-
-
-
-
-gameState.prestigeRequirement*=6;
-
-
-
-
-alert(
-
-"✨ 覺醒成功！\n\n"+
-
-"晉升："+
-gameState.jobNames[
-gameState.jobLevel
-]+
-
-"\n\n永久力量 +1\n"+
-"全部收益 +10%"
-
-);
-
-
-
-updateUI();
-
-
-}
-
-
-
-
-
-
-
-/* ======================
-   遠征系統
-====================== */
-
-
-function startAdventure(){
-
-
-if(
-gameState.jobLevel<1
-||
-advState.away
-)
+if(s.time>0)
 
 return;
 
 
 
-
-advState.away=true;
-
-
-advState.time=30;
+if(type=="rage"){
 
 
+gameState.buff.damageBonus+=0.5;
 
 
-advState.timer=
-
-setInterval(
-
-function(){
+s.time=s.cooldown;
 
 
-
-advState.time--;
-
+setTimeout(function(){
 
 
+gameState.buff.damageBonus-=0.5;
 
 
-if(
-advState.time<=0
-){
-
-
-
-clearInterval(
-advState.timer
-);
-
-
-
-advState.away=false;
-
-
-
-
-var reward=
-
-1500+
-
-gameState.jobLevel*
-5000;
-
-
-
-reward*=
-
-(
-1+
-gameState.upgrades.crown.lvl
-);
-
-
-
-addGold(reward);
-
-
-
-
-
-alert(
-
-"⚔️ 遠征完成！\n\n"+
-"獲得 "+
-Math.floor(reward)+
-" 金幣"
-
-);
-
-
-
-
-
-updateUI();
+},30000);
 
 
 
 }
 
-else{
 
 
-updateUI();
+if(type=="fortune"){
+
+
+gameState.buff.goldBonus+=1;
+
+
+s.time=s.cooldown;
+
+
+setTimeout(function(){
+
+
+gameState.buff.goldBonus-=1;
+
+
+},30000);
+
 
 
 }
-
-
-
-},
-
-1000
-
-);
-
 
 
 
@@ -1320,109 +1020,30 @@ updateUI();
 
 
 
-
-
-
-
-
-/* ======================
-   UI更新
-====================== */
-
-
-function updateUI(){
-
-
-
-if(
-!document.getElementById("gold")
-)
-
-return;
-
-
-
-
-
-document.getElementById("gold")
-.innerHTML=
-
-gameState.gold+
-" 💰";
-
-
-
-
-
-document.getElementById("job")
-.innerHTML=
-
-gameState.jobNames[
-gameState.jobLevel
-];
-
-
-
-
-
-document.getElementById("gps")
-.innerHTML=
-
-(
-
-getIdleIncome()
-
-/
-
-(getCurrentInterval()/1000)
-
-)
-
-.toFixed(1);
-
-
-
-
-
-document.getElementById("rebirth")
-.innerHTML=
-
-gameState.rebirthPower;
-
-
-
+function skillTimer(){
 
 
 
 for(
-var k in gameState.upgrades
+var k in gameState.skills
 ){
 
 
-var u=
-gameState.upgrades[k];
+var s=
+gameState.skills[k];
+
+
+if(s.time>0)
+
+s.time--;
 
 
 
-document.getElementById(
-"lv-"+k
-).innerHTML=
-
-"Lv."+u.lvl;
+}
 
 
 
-
-document.getElementById(
-"cost-"+k
-).innerHTML=
-
-u.lvl>=u.max?
-
-"MAX":
-
-u.cost+" 💰";
-
+updateUI();
 
 
 }
@@ -1431,105 +1052,32 @@ u.cost+" 💰";
 
 
 
-var btn=
-
-document.getElementById(
-"prestige"
-);
 
 
+/*
+================================
+ 任務與成就
+================================
+*/
+
+
+function checkAchievement(){
 
 
 
 if(
-gameState.jobLevel>=3
-){
+gameState.totalGold>=1000000
+)
 
-
-btn.innerHTML=
-
-"已達最高境界";
-
-
-btn.disabled=true;
-
-
-}
-
-else{
-
-
-btn.disabled=
-
-gameState.gold <
-
-gameState.prestigeRequirement;
+gameState.achievements.million=true;
 
 
 
-btn.innerHTML=
+if(
+gameState.jobLevel>=4
+)
 
-"轉職 → "+
-
-gameState.jobNames[
-gameState.jobLevel+1
-]+
-
-"<br>需求 "+
-
-gameState.prestigeRequirement+
-" 💰";
-
-
-}
-
-
-
-
-
-
-
-if(gameState.jobLevel>=1){
-
-
-
-document.getElementById(
-"adv"
-).style.display="block";
-
-
-
-document.getElementById(
-"advBtn"
-).disabled=
-
-advState.away;
-
-
-
-document.getElementById(
-"advBtn"
-).innerHTML=
-
-advState.away?
-
-"遠征中 "+advState.time+" 秒":
-
-"⚔️ 開始遠征";
-
-
-
-}
-
-else{
-
-
-document.getElementById(
-"adv"
-).style.display="none";
-
-
-}
+gameState.achievements.master=true;
 
 
 
@@ -1538,20 +1086,23 @@ document.getElementById(
 
 
 
-</script>
-<script>
 
 
-/* =========================
-   Canvas 初始化
-========================= */
+
+/*
+================================
+ Canvas 初始化
+================================
+*/
 
 
 function initCanvas(){
 
 
+
 canvas=
 document.getElementById("canvas");
+
 
 
 ctx=
@@ -1559,81 +1110,91 @@ canvas.getContext("2d");
 
 
 
-for(
-var i=0;i<40;i++
-){
 
-envState.drops.push({
+for(var i=0;i<40;i++){
+
+
+environment.stars.push({
+
 
 x:Math.random()*canvas.width,
 
-y:Math.random()*canvas.height,
-
-speed:2+Math.random()*5
-
-});
-
-}
-
-
-
-
-for(
-var i=0;i<30;i++
-){
-
-envState.stars.push({
-
-x:Math.random()*canvas.width,
 
 y:Math.random()*150,
 
+
 r:1+Math.random()*2
 
+
 });
+
 
 }
 
 
 
 
+for(var i=0;i<40;i++){
 
-for(
-var i=0;i<35;i++
-){
 
-envState.particles.push({
+environment.particles.push({
+
 
 angle:Math.random()*6.28,
 
-radius:30+Math.random()*50,
 
-speed:0.01+Math.random()*0.03
+radius:40+Math.random()*60,
+
+
+speed:0.01+Math.random()*0.04
+
 
 });
 
-}
-
-
 
 }
 
 
 
 
+for(var i=0;i<30;i++){
+
+
+environment.rain.push({
+
+
+x:Math.random()*canvas.width,
+
+
+y:Math.random()*canvas.height,
+
+
+speed:2+Math.random()*5
+
+
+});
+
+
+}
 
 
 
-/* =========================
-   Canvas 點擊
-========================= */
+
+}
+
+
+
+
+
+
+/*
+================================
+ Canvas 點擊
+================================
+*/
 
 
 function canvasClick(e){
-
-
-if(advState.away)
-return;
 
 
 
@@ -1646,15 +1207,13 @@ var x=
 e.clientX-rect.left;
 
 
-
 var y=
 e.clientY-rect.top;
 
 
 
-
 var value=
-getClickIncome();
+getClickPower();
 
 
 
@@ -1662,42 +1221,53 @@ addGold(value);
 
 
 
-
-fxState.scale=0.8;
-
+gameState.missions.click++;
 
 
 
-fxState.texts.push({
+fx.scale=0.8;
+
+
+
+fx.texts.push({
+
 
 x:x,
 
+
 y:y,
 
-text:
 
-(showCrit?"CRITICAL ":"+")+
+text:
+(critical?"CRITICAL ":"+")+
 value,
+
 
 life:100,
 
-crit:showCrit
+
+crit:critical
+
 
 });
 
 
 
 
+fx.waves.push({
 
-fxState.waves.push({
 
 x:x,
 
+
 y:y,
+
 
 r:5,
 
+
 life:1
+
 
 });
 
@@ -1713,36 +1283,31 @@ updateUI();
 
 
 
+/*
+================================
+ Canvas 動畫
+================================
+*/
 
 
-/* =========================
-   動畫更新
-========================= */
-
-
-function updateAnimation(){
-
-
-if(
-fxState.scale<1
-)
-
-fxState.scale+=0.05;
+function animationUpdate(){
 
 
 
+if(fx.scale<1)
+
+fx.scale+=0.05;
 
 
 
 for(
-var i=fxState.texts.length-1;
-i>=0;
-i--
+var i=fx.texts.length-1;
+i>=0;i--
 ){
 
 
 var t=
-fxState.texts[i];
+fx.texts[i];
 
 
 t.y-=1;
@@ -1754,7 +1319,7 @@ t.life-=2;
 
 if(t.life<=0)
 
-fxState.texts.splice(i,1);
+fx.texts.splice(i,1);
 
 
 }
@@ -1762,17 +1327,14 @@ fxState.texts.splice(i,1);
 
 
 
-
-
 for(
-var i=fxState.waves.length-1;
-i>=0;
-i--
+var i=fx.waves.length-1;
+i>=0;i--
 ){
 
 
 var w=
-fxState.waves[i];
+fx.waves[i];
 
 
 w.r+=4;
@@ -1784,66 +1346,40 @@ w.life-=0.05;
 
 if(w.life<=0)
 
-fxState.waves.splice(i,1);
+fx.waves.splice(i,1);
 
 
 
 }
 
 
+
 }
 
 
 
-
-
-
-
-
-/* =========================
-   主渲染
-========================= */
-
-
-var angle=0;
 
 
 
 function render(){
 
 
+
 ctx.clearRect(
-
 0,
-
 0,
-
 canvas.width,
-
 canvas.height
-
 );
 
 
 
-angle+=0.04;
-
-
-
-
-
 var bg=
-
 ctx.createLinearGradient(
-
 0,
-
 0,
-
 0,
-
 canvas.height
-
 );
 
 
@@ -1866,55 +1402,45 @@ ctx.fillStyle=bg;
 
 
 ctx.fillRect(
-
 0,
-
 0,
-
 canvas.width,
-
 canvas.height
-
 );
 
 
 
 
 
+/*
+星空
+*/
 
 
-
-/* 星空 */
-
-
-ctx.fillStyle="#ffffff";
+ctx.fillStyle="#fff";
 
 
 
 for(
 var i=0;
-i<envState.stars.length;
+i<environment.stars.length;
 i++
 ){
 
 
 var s=
-envState.stars[i];
+environment.stars[i];
+
 
 ctx.beginPath();
 
+
 ctx.arc(
-
 s.x,
-
 s.y,
-
 s.r,
-
 0,
-
 Math.PI*2
-
 );
 
 
@@ -1923,9 +1449,6 @@ ctx.fill();
 
 
 }
-
-
-
 
 
 
@@ -1941,7 +1464,6 @@ canvas.height/2;
 
 
 var color=
-
 gameState.jobColors[
 gameState.jobLevel
 ];
@@ -1950,28 +1472,19 @@ gameState.jobLevel
 
 
 
-
-
-
-/* 光環 */
+/*
+光環
+*/
 
 
 var aura=
-
 ctx.createRadialGradient(
-
 cx,
-
 cy,
-
 5,
-
 cx,
-
 cy,
-
-80
-
+90
 );
 
 
@@ -1998,24 +1511,16 @@ aura.addColorStop(
 ctx.fillStyle=aura;
 
 
-
 ctx.beginPath();
 
 
 ctx.arc(
-
 cx,
-
 cy,
-
-80,
-
+90,
 0,
-
 Math.PI*2
-
 );
-
 
 
 ctx.fill();
@@ -2024,21 +1529,20 @@ ctx.fill();
 
 
 
-
-
-
-/* 粒子 */
+/*
+粒子
+*/
 
 
 for(
 var i=0;
-i<envState.particles.length;
+i<environment.particles.length;
 i++
 ){
 
 
 var p=
-envState.particles[i];
+environment.particles[i];
 
 
 p.angle+=p.speed;
@@ -2046,7 +1550,6 @@ p.angle+=p.speed;
 
 
 var px=
-
 cx+
 Math.cos(p.angle)
 *p.radius;
@@ -2054,7 +1557,6 @@ Math.cos(p.angle)
 
 
 var py=
-
 cy+
 Math.sin(p.angle)
 *p.radius;
@@ -2064,70 +1566,22 @@ Math.sin(p.angle)
 ctx.fillStyle=color;
 
 
-
 ctx.beginPath();
 
+
 ctx.arc(
-
 px,
-
 py,
-
 2,
-
 0,
-
 Math.PI*2
-
 );
-
 
 
 ctx.fill();
 
 
-
 }
-
-
-
-
-
-
-
-
-
-ctx.save();
-
-
-
-ctx.translate(
-
-cx,
-
-cy
-
-);
-
-
-
-ctx.scale(
-
-fxState.scale,
-
-fxState.scale
-
-);
-
-
-
-ctx.translate(
-
--cx,
-
--cy
-
-);
 
 
 
@@ -2139,17 +1593,11 @@ color
 
 
 
-ctx.restore();
-
-
-
-
-
 drawEffects();
 
 
 
-updateAnimation();
+animationUpdate();
 
 
 
@@ -2158,18 +1606,12 @@ requestAnimationFrame(render);
 
 
 }
-
-
-
-
-
-
-
-
-
-/* =========================
-   英雄角色
-========================= */
+ 
+/*
+================================
+ 英雄角色繪製
+================================
+*/
 
 
 function drawHero(x,y,color){
@@ -2178,49 +1620,36 @@ function drawHero(x,y,color){
 
 /* 披風 */
 
-
 ctx.fillStyle=
-
 gameState.jobLevel>=3?
-
-"#700000":
-
+"#7f1d1d":
 "#111827";
-
-
 
 ctx.beginPath();
 
-
 ctx.moveTo(
-x-25,
-y+40
+x-30,
+y+45
 );
-
 
 ctx.lineTo(
-x+25,
-y+40
+x+30,
+y+45
 );
-
 
 ctx.lineTo(
-x+15,
-y-10
+x+18,
+y-15
 );
-
 
 ctx.lineTo(
-x-15,
-y-10
+x-18,
+y-15
 );
-
 
 ctx.closePath();
 
-
 ctx.fill();
-
 
 
 
@@ -2228,23 +1657,14 @@ ctx.fill();
 
 /* 身體 */
 
-
 ctx.fillStyle="#94a3b8";
 
-
 ctx.fillRect(
-
-x-15,
-
+x-18,
 y-20,
-
-30,
-
-35
-
+36,
+40
 );
-
-
 
 
 
@@ -2252,27 +1672,17 @@ y-20,
 
 /* 頭盔 */
 
-
 ctx.fillStyle="#475569";
-
 
 ctx.beginPath();
 
-
 ctx.arc(
-
 x,
-
-y-35,
-
-15,
-
+y-40,
+18,
 0,
-
 Math.PI*2
-
 );
-
 
 ctx.fill();
 
@@ -2280,30 +1690,16 @@ ctx.fill();
 
 
 
-
-
-
 /* 眼睛 */
-
 
 ctx.fillStyle=color;
 
-
 ctx.fillRect(
-
-x-8,
-
-y-38,
-
-16,
-
-4
-
+x-10,
+y-43,
+20,
+5
 );
-
-
-
-
 
 
 
@@ -2311,36 +1707,31 @@ y-38,
 
 /* 劍 */
 
-
 if(
-gameState.upgrades.sword.lvl>0
+gameState.equipment.sword.level>0
 ){
 
 
 ctx.strokeStyle="#ffffff";
 
-
-ctx.lineWidth=4;
-
+ctx.lineWidth=5;
 
 
 ctx.beginPath();
 
-
 ctx.moveTo(
-x-25,
+x-30,
 y
 );
 
 
 ctx.lineTo(
-x-25,
-y-60
+x-30,
+y-70
 );
 
 
 ctx.stroke();
-
 
 
 }
@@ -2349,38 +1740,34 @@ ctx.stroke();
 
 
 
-
-
-
 /* 王冠 */
 
-
 if(
-gameState.upgrades.crown.lvl>0
+gameState.equipment.crown.level>0
 ){
 
 
-ctx.fillStyle="#f1c40f";
+ctx.fillStyle="#facc15";
 
 
 ctx.beginPath();
 
 
 ctx.moveTo(
-x-15,
-y-55
+x-20,
+y-65
 );
 
 
 ctx.lineTo(
 x,
-y-75
+y-90
 );
 
 
 ctx.lineTo(
-x+15,
-y-55
+x+20,
+y-65
 );
 
 
@@ -2395,20 +1782,11 @@ ctx.fill();
 
 
 
-
 }
 
 
 
 
-
-
-
-
-
-/* =========================
-   特效
-========================= */
 
 
 function drawEffects(){
@@ -2417,49 +1795,38 @@ function drawEffects(){
 
 for(
 var i=0;
-i<fxState.waves.length;
+i<fx.waves.length;
 i++
 ){
 
 
 var w=
-fxState.waves[i];
+fx.waves[i];
 
 
-
-ctx.globalAlpha=w.life;
-
+ctx.globalAlpha=
+w.life;
 
 
 ctx.strokeStyle=
-
 gameState.jobColors[
 gameState.jobLevel
 ];
 
 
-
 ctx.lineWidth=3;
-
 
 
 ctx.beginPath();
 
 
 ctx.arc(
-
 w.x,
-
 w.y,
-
 w.r,
-
 0,
-
 Math.PI*2
-
 );
-
 
 
 ctx.stroke();
@@ -2474,49 +1841,36 @@ ctx.globalAlpha=1;
 
 
 
-
-
-
 for(
 var i=0;
-i<fxState.texts.length;
+i<fx.texts.length;
 i++
 ){
 
 
 var t=
-fxState.texts[i];
+fx.texts[i];
 
 
 
 ctx.font=
-
 t.crit?
-
 "bold 28px Arial":
-
 "bold 18px Arial";
 
 
 
 ctx.fillStyle=
-
 t.crit?
-
-"#ff3333":
-
+"#ef4444":
 "#ffffff";
 
 
 
 ctx.fillText(
-
 t.text,
-
 t.x,
-
 t.y
-
 );
 
 
@@ -2532,15 +1886,186 @@ t.y
 
 
 
+/*
+================================
+ UI 更新
+================================
+*/
 
 
-/* =========================
-   遊戲啟動
-========================= */
+function updateUI(){
+
+
+
+if(!document.getElementById("gold"))
+
+return;
+
+
+
+document.getElementById("gold").innerHTML=
+Math.floor(gameState.gold)+
+" 💰";
+
+
+
+document.getElementById("job").innerHTML=
+gameState.jobs[
+gameState.jobLevel
+];
+
+
+
+document.getElementById("gps").innerHTML=
+(
+getIdleIncome()
+/
+(getInterval()/1000)
+)
+.toFixed(1);
+
+
+
+document.getElementById("rebirth").innerHTML=
+gameState.rebirthPower;
+
+
+
+
+
+for(var k in gameState.equipment){
+
+
+
+var e=
+gameState.equipment[k];
+
+
+
+document.getElementById(
+"lv-"+k
+).innerHTML=
+"Lv."+e.level;
+
+
+
+document.getElementById(
+"cost-"+k
+).innerHTML=
+e.level>=e.max?
+"MAX":
+e.cost+" 💰";
+
+
+
+}
+
+
+
+
+
+var p=
+document.getElementById("prestige");
+
+
+
+if(
+gameState.jobLevel>=4
+){
+
+
+p.innerHTML=
+"已達最高境界";
+
+
+p.disabled=true;
+
+
+
+}else{
+
+
+p.disabled=
+gameState.gold<
+gameState.prestigeCost;
+
+
+
+p.innerHTML=
+"轉職 → "+
+gameState.jobs[
+gameState.jobLevel+1
+]+
+"<br>需求 "+
+gameState.prestigeCost+
+" 💰";
+
+
+}
+
+
+
+
+
+document.getElementById("rage").innerHTML=
+gameState.skills.rage.time>0?
+"怒氣 "+gameState.skills.rage.time:
+"🔥 狂怒";
+
+
+
+document.getElementById("fortune").innerHTML=
+gameState.skills.fortune.time>0?
+"幸運 "+gameState.skills.fortune.time:
+"💎 財運";
+
+
+
+}
+
+
+
+
+
+/*
+================================
+ 主循環
+================================
+*/
+
+
+setInterval(
+idleEngine,
+1000
+);
+
+
+setInterval(
+skillTimer,
+1000
+);
+
+
+
+setInterval(
+saveGame,
+10000
+);
+
+
+
+
+
+
+
+/*
+================================
+ 初始化
+================================
+*/
 
 
 function gameInit(){
-
 
 
 loadGame();
@@ -2560,7 +2085,287 @@ render();
 
 
 
+
+
+
 </script>
+
+</head>
+
+
+<body onload="gameInit()">
+
+
+
+<div class="header">
+
+
+<div class="gold">
+
+<span id="gold">
+0
+</span>
+
+</div>
+
+
+
+<div>
+
+職業：
+
+<span id="job">
+見習冒險者
+</span>
+
+</div>
+
+
+
+<div>
+
+每秒收益：
+
+<span id="gps">
+0
+</span>
+
+</div>
+
+
+
+<div>
+
+永久力量：
+
+<span id="rebirth">
+0
+</span>
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div style="
+display:flex;
+gap:10px;
+">
+
+
+
+
+
+<div class="panel"
+style="
+width:260px;
+height:460px;
+">
+
+
+<canvas
+id="canvas"
+width="250"
+height="450"
+onclick="canvasClick(event)"
+style="
+border-radius:10px;
+">
+</canvas>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div style="width:360px;">
+
+
+
+
+
+<div class="panel">
+
+
+<div class="title">
+⚔️ 聖殿轉職
+</div>
+
+
+<button
+id="prestige"
+onclick="prestige()"
+style="width:100%">
+轉職
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="panel">
+
+
+<div class="title">
+🛠 裝備強化
+</div>
+
+
+
+<div class="item">
+
+⚔ 光能巨劍
+
+<span id="lv-sword">
+Lv.0
+</span>
+
+<button onclick="buyEquipment('sword')">
+
+<span id="cost-sword">
+10
+</span>
+
+</button>
+
+</div>
+
+
+
+
+<div class="item">
+
+🛡 脈衝重盾
+
+<span id="lv-shield">
+Lv.0
+</span>
+
+<button onclick="buyEquipment('shield')">
+
+<span id="cost-shield">
+30
+</span>
+
+</button>
+
+</div>
+
+
+
+
+
+<div class="item">
+
+👕 納米重鎧
+
+<span id="lv-armor">
+Lv.0
+</span>
+
+<button onclick="buyEquipment('armor')">
+
+<span id="cost-armor">
+100
+</span>
+
+</button>
+
+</div>
+
+
+
+
+
+<div class="item">
+
+👑 不朽王冠
+
+<span id="lv-crown">
+Lv.0
+</span>
+
+<button onclick="buyEquipment('crown')">
+
+<span id="cost-crown">
+500
+</span>
+
+</button>
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="panel">
+
+
+<div class="title">
+✨ 技能
+</div>
+
+
+
+<button onclick="useSkill('rage')">
+
+<span id="rage">
+🔥 狂怒
+</span>
+
+</button>
+
+
+
+<button onclick="useSkill('fortune')">
+
+<span id="fortune">
+💎 財運
+</span>
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+
 
 
 </body>
